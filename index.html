@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#00843d">
+<title>نظام تطبيق حماية</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap">
+<style>
+/* VOICE  أداة عمل تُستخدم تحت الضغط: هادئة، واضحة، كبيرة الأزرار
+   IDEA   لوحة مخرج الطوارئ: أخضر السلامة بكتابة بيضاء، والأحمر للخطر فقط
+   PICTURE في كل شاشة الشيء العامل نفسه: قائمة الفصل، شبكة الفصول، الرمز
+   COLOUR أخضر السلامة #00843d، أحمر الإنذار #d7262e، كهرماني للانتظار
+   TYPE   IBM Plex Sans Arabic مع بدائل النظام
+   LAYOUT عمود واحد للجوال، يتسع لعمودين في شاشة القائدة على الحاسب */
+:root{color-scheme:light dark;--bg:light-dark(#f4f7f5,#0c1310);--card:light-dark(#ffffff,#141f1a);--ink:light-dark(#0e1a14,#e8f1ec);--mut:light-dark(#4d5e55,#9cb1a5);--line:light-dark(#d6e0da,#273830);--g:#00843d;--gd:#006a31;--g2:light-dark(#e2f3e8,#11331f);--r:#d7262e;--r2:light-dark(#fdeaea,#3a1517);--a:light-dark(#9a6400,#f0b43c);--a2:light-dark(#fff2d3,#36290b);--n2:light-dark(#eceff1,#222b27)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 "IBM Plex Sans Arabic",Tahoma,"Segoe UI","Noto Sans Arabic","Geeza Pro",sans-serif;overflow-x:clip;padding-bottom:96px}
+button,input,select,textarea{font:inherit;color:inherit}
+.top{background:var(--g);color:#fff;padding:12px max(16px,4vw);display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:20}
+.top h1{font-size:18px;margin:0;font-weight:700;flex:1;line-height:1.3}
+.top small{display:block;font-weight:400;opacity:.85;font-size:13px}
+.top button{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:10px;min-height:40px;padding:0 12px;cursor:pointer}
+.wrap{max-width:980px;margin:0 auto;padding:16px max(16px,4vw)}
+h2{font-size:clamp(24px,5vw,32px);line-height:1.15;margin:8px 0 6px;letter-spacing:-.01em}
+h3{font-size:18px;margin:22px 0 8px}
+p.lead{color:var(--mut);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:10px;margin:14px 0}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:start;cursor:pointer;min-height:96px;display:flex;flex-direction:column;gap:4px}
+.tile b{font-size:19px}.tile span{color:var(--mut);font-size:14px}
+.tile.main{background:var(--g);color:#fff;border-color:var(--g)}.tile.main span{color:#e3f6ea}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-weight:600;text-decoration:none}
+.btn.pri{background:var(--g);border-color:var(--g);color:#fff}
+.btn.red{background:var(--r);border-color:var(--r);color:#fff}
+.btn.big{min-height:62px;font-size:19px;width:100%}
+.btn.sm{min-height:38px;padding:0 12px;font-size:14px}
+.btn:focus-visible,.tile:focus-visible,.row:focus-visible{outline:3px solid var(--a);outline-offset:2px}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+label.f{display:block;margin:10px 0}label.f span{display:block;font-size:14px;color:var(--mut);margin-bottom:4px}
+input[type=text],input[type=number],select,textarea{width:100%;font-size:16px;min-height:46px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+textarea{min-height:120px;line-height:1.6}
+.note{font-size:14px;color:var(--mut)}
+.warn{background:var(--a2);border:1px solid var(--a);border-radius:12px;padding:10px 12px;margin:10px 0;font-size:15px}
+.alarm{background:var(--r2);border:2px solid var(--r);border-radius:14px;padding:12px 14px;margin:10px 0}
+.alarm h4{margin:0 0 6px;color:var(--r);font-size:18px}
+.okbox{background:var(--g2);border:1px solid var(--g);border-radius:14px;padding:12px 14px;margin:10px 0}
+.list{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.row{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;min-height:54px;cursor:pointer;text-align:start;width:100%}
+.row .n{width:2.2em;color:var(--mut);font-variant-numeric:tabular-nums;flex:none}
+.row .nm{flex:1;font-size:17px}
+.row .sub{display:block;font-size:13px;color:var(--mut)}
+.chip{display:inline-block;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600;white-space:nowrap;flex:none}
+.c-p{background:var(--g2);color:var(--g)}.c-i{background:var(--a2);color:var(--a)}.c-a,.c-e{background:var(--n2);color:var(--mut)}.c-o{background:var(--a2);color:var(--a)}.c-m{background:var(--r);color:#fff}.c-f{background:var(--g2);color:var(--g)}
+.row.st-m{border-color:var(--r);background:var(--r2)}.row.st-o,.row.st-i{border-color:var(--a)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,140px),1fr));gap:8px;margin:10px 0}
+.cls{border-radius:14px;padding:12px;min-height:88px;border:2px solid var(--line);background:var(--card);cursor:pointer;text-align:start;display:flex;flex-direction:column;gap:2px}
+.cls b{font-size:20px}.cls span{font-size:13px;color:var(--mut)}
+.cls.ok{border-color:var(--g);background:var(--g2)}.cls.bad{border-color:var(--r);background:var(--r2)}.cls.wait{border-color:var(--a);background:var(--a2)}
+.timer{font-size:clamp(40px,11vw,64px);font-weight:700;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,120px),1fr));gap:8px;margin:12px 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
+.stat b{display:block;font-size:26px;line-height:1.1;font-variant-numeric:tabular-nums}.stat span{font-size:13px;color:var(--mut)}
+.stat.r{border-color:var(--r)}.stat.r b{color:var(--r)}.stat.a b{color:var(--a)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}.seg button{flex:1 1 auto;min-height:46px;border-radius:10px;border:1px solid var(--line);background:var(--card);cursor:pointer;padding:0 12px}
+.seg button[aria-pressed=true]{background:var(--g);color:#fff;border-color:var(--g);font-weight:700}
+.bar{position:fixed;inset-inline:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px max(16px,4vw) calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center;z-index:15}
+.bar .cnt{flex:1;font-size:15px;line-height:1.3}.bar .cnt b{font-size:24px;display:block}
+.qr{background:#fff;padding:10px;border-radius:14px;max-width:340px;margin:10px auto;border:1px solid var(--line)}
+.qr svg{display:block;width:100%;height:auto}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:min(640px,100%);max-height:88vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px max(16px,4vw) calc(18px + env(safe-area-inset-bottom,0px))}
+.sheet h3{margin-top:0}
+@media(min-width:700px){.scrim{align-items:center}.sheet{border-radius:18px}}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:center;white-space:nowrap}
+th{background:var(--g2)}td.l{text-align:start;white-space:normal;min-width:8em}
+.toast{position:fixed;inset-inline:16px;bottom:96px;margin:auto;max-width:520px;background:#0e1a14;color:#fff;border-radius:12px;padding:12px 16px;z-index:60;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+video{width:100%;border-radius:12px;background:#000;max-height:50vh}
+details summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;align-items:center}
+.scen{border-inline-start:6px solid var(--line)}.k-out{border-inline-start-color:var(--g)}.k-in{border-inline-start-color:var(--a)}.k-lock{border-inline-start-color:var(--r)}.k-none{border-inline-start-color:var(--mut)}
+.scen ol{margin:6px 0;padding-inline-start:26px;list-style:arabic-indic}
+.two{display:grid;gap:12px}@media(min-width:860px){.two{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}}
+@media print{.top,.bar,.btns,.noprint{display:none!important}body{background:#fff;color:#000;padding:0}.card{border:0}}
+@media(prefers-reduced-motion:no-preference){.toast{animation:up .2s ease-out}@keyframes up{from{transform:translateY(12px);opacity:0}}}
+</style>
+</head>
+<body>
+<header class="top">
+  <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect x="1" y="1" width="32" height="32" rx="6" fill="#fff"/><rect x="5" y="6" width="11" height="22" rx="1.5" fill="#00843d"/><path d="M20 17h9m-4-4 4 4-4 4" stroke="#00843d" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <h1 id="ttl">نظام تطبيق حماية<small id="sub">النسخة الميدانية</small></h1>
+  <button type="button" data-a="home" id="homeBtn">الرئيسية</button>
+</header>
+<main class="wrap" id="app"></main>
+<div id="bar"></div>
+<div id="layer"></div>
+<input type="file" id="fPhoto" accept="image/*" capture="environment" hidden>
+<input type="file" id="fImg" accept="image/*" hidden>
+<input type="file" id="fJson" accept=".json,application/json,text/plain" hidden>
+<script src="config.js"></script>
+<script src="vendor/qrcode.min.js"></script>
+<script src="vendor/jsqr.min.js"></script>
+<script>
+/* إن لم تتوفر المكتبات محلياً تُحمّل من مصدرها العام */
+if (!window.qrcode) document.write('<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"><\/script>');
+if (!window.jsQR) document.write('<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"><\/script>');
+</script>
+<script>
+{
+/* ---------- ثوابت ---------- */
+const KEY = 'himaya-field-v1';
+const ST = {p:'حاضرة', i:'مصابة', a:'غائبة اليوم', e:'مستأذنة', o:'مع مجموعة أخرى', m:'مفقودة'};
+const LS = {c:'كانت في الفصل', w:'خرجت لدورة المياه', k:'في العيادة', x:'مكان آخر', u:'لا أعرف'};
+const LOC = {room:'قاعة الفصل', lab:'المعمل', gym:'الصالة أو الملعب', yard:'الساحة أو الفسحة', other:'مكان آخر'};
+const EVT = {ann:'تمرين معلن', sur:'تمرين مفاجئ', desk:'تمرين مكتبي', real:'حدث فعلي'};
+const KIND = {out:'إخلاء خارجي', in:'احتماء في المكان', lock:'إغلاق وإيواء', none:'لا إخلاء عام', mix:'حسب الموقف'};
+const SCEN = [
+ {t:'زلزال أو هزة أرضية', k:'out', r:'إخلاء كامل بعد انتهاء الهزة', s:['أثناء الهزة: انخفضي، احتمي، تمسّكي أسفل الطاولات بعيداً عن النوافذ والزجاج.','بعد توقف الهزة: جرس الإخلاء وإخلاء المبنى فوراً وبشكل منظم.','التوجه لنقطة التجمع بعيداً عن المباني والأعمدة.','حصر فوري للطالبات والمنسوبات والإبلاغ عن أي مفقودة.','منع العودة للمبنى حتى تفحصه الجهات المختصة.']},
+ {t:'حريق داخل المبنى', k:'out', r:'إخلاء كامل فوري', s:['جرس الإنذار فوراً وإبلاغ الدفاع المدني (٩٩٨).','فصل التيار متى كان آمناً، ولا يُفصل مع مضخة حريق كهربائية إلا بإشراف الدفاع المدني.','الإخلاء عبر المسارات المحددة مع إغلاق الأبواب خلفكن.','التوجه لنقطة التجمع الخارجية وإجراء الحصر.','فريق الإطفاء يحاول السيطرة دون تعريض نفسه للخطر حتى وصول الدفاع المدني.']},
+ {t:'حريق خارجي (أحراش أو مبانٍ مجاورة)', k:'mix', r:'إخلاء كامل للموقع أو بقاء في المكان', s:['تقييم اتجاه الريح وقرب النار بالتنسيق مع الجهات المختصة.','إن كان الخطر وشيكاً: إخلاء كامل إلى مدرسة مضيفة أو موقع خارج منطقة الخطر.','إن كان المبنى محمياً والطرق غير مناسبة: البقاء وإغلاق النوافذ ومداخل التكييف.','توجيه الطالبات إلى الحافلات أو المسار الآمن نحو الموقع البديل.']},
+ {t:'تسرّب غاز', k:'out', r:'إخلاء كامل فوري', phone:1, s:['لا تُستخدم المفاتيح الكهربائية ولا الجوالات داخل المبنى.','فتح النوافذ والأبواب للتهوية متى أمكن بأمان.','إغلاق الصمام الرئيسي للغاز إن كان الوصول إليه آمناً.','إخلاء المبنى فوراً إلى نقطة تجمع بعيدة عن مصدر التسرب.','الاتصال بشركة الغاز والدفاع المدني من موقع آمن.']},
+ {t:'تهديد بقنبلة أو جسم مشبوه', k:'out', r:'إخلاء كامل أو جزئي بتوجيه الخبراء', s:['عدم لمس الجسم وإخلاء المنطقة المحيطة فوراً.','الإخلاء الكامل عادةً بناءً على توجيهات الشرطة.','يجوز الإخلاء الجزئي إذا كان الجسم في منطقة معزولة وقررت الجهات المختصة ذلك.','التوجه إلى نقطة تجمع بعيدة ومنع الاقتراب من المبنى.']},
+ {t:'إنذار وطني (حرب أو غارة جوية)', k:'lock', r:'احتماء في الملاجئ', s:['التوجه فوراً إلى الملاجئ أو الطوابق السفلية عند سماع الإنذار.','إغلاق جميع النوافذ والأبواب.','البقاء في الملجأ حتى صدور إشارة انتهاء الخطر.','انخفضي، احتمي، تمسّكي عند وقوع قصف.','متابعة تعليمات الدفاع المدني عبر القنوات الرسمية.']},
+ {t:'إطلاق نار أو اقتحام مسلح', k:'lock', r:'إغلاق كامل', s:['إطلاق كود الإغلاق: أقفلي، أطفئي، اختفي عن الأنظار.','إغلاق الأبواب وتأمينها، إطفاء الأنوار، الاختباء بعيداً عن النوافذ والتزام الصمت.','الاتصال بالشرطة فوراً بالمعلومات المتاحة دون تعريض أحد للخطر.','لا إخلاء إلا بأمر الشرطة.']},
+ {t:'إخلاء الموقع بالكامل (كارثة كبرى)', k:'out', r:'إخلاء كامل إلى موقع خارجي', s:['تفعيل الإخلاء بناءً على توجيهات الدفاع المدني أو الجهة العليا.','توجيه الطالبات إلى الحافلات المعدّة مسبقاً.','الانتقال إلى المدرسة المضيفة المحددة في الخطة.','حصر دقيق قبل المغادرة وعند الوصول.','إبلاغ أولياء الأمور عبر القنوات المعتمدة.']},
+ {t:'إعصار أو عاصفة شديدة', k:'in', r:'بقاء في المكان داخل ملاجئ داخلية', s:['متابعة تحذيرات الأرصاد والرسائل الرسمية.','الانتقال إلى الطوابق السفلية أو الممرات الداخلية أو الغرف بلا نوافذ.','الابتعاد عن النوافذ والزجاج.','انخفضي، احتمي، تمسّكي مع حماية الرأس.']},
+ {t:'تسرّب مواد خطرة خارج المدرسة', k:'in', r:'بقاء في المكان مع إغلاق المرافق', s:['إغلاق النوافذ والأبواب الخارجية.','إطفاء أنظمة التكييف ومنع دخول الهواء الخارجي.','البقاء في الفصول وانتظار تعليمات الدفاع المدني.','متابعة التعليمات عبر القنوات الرسمية.']},
+ {t:'انقطاع الكهرباء لفترة طويلة', k:'none', r:'تعديل التشغيل أو إخلاء جزئي أو كامل', s:['تقييم أثر الانقطاع على التكييف والإضاءة والمصاعد وسلامة الطالبات.','إن بقي الوضع آمناً: تعديل التشغيل والاستفادة من الإضاءة الطبيعية.','إن أصبح غير آمن بسبب الحرارة أو الظلام: إخلاء جزئي أو كامل.','تشغيل الإضاءة الطارئة والمولدات إن كانت متاحة وآمنة.']},
+ {t:'انهيار جزء من المبنى', k:'out', r:'إخلاء كامل فوري', s:['إطلاق الإنذار فوراً.','إخلاء المبنى بالكامل من المخارج الآمنة بعيداً عن منطقة الانهيار.','التوجه إلى نقطة تجمع بعيدة عن المبنى.','حصر فوري والإبلاغ عن المفقودات أو من يُحتمل وجودهن تحت الأنقاض.','منع العودة إلى المبنى تماماً حتى تصريح الجهات المختصة.']},
+ {t:'فقدان طالبة أو نقص في الحصر', k:'none', r:'بحث مضبوط دون إعادة غير المدربين', s:['إعادة الحصر في نقطة التجمع والتحقق من السجلات.','عدم السماح لأي شخص غير مخوّل بالعودة إلى المبنى.','إبلاغ قائدة الإخلاء والدفاع المدني باسم المفقودة وآخر موقع متوقع.','فريق البحث المدرب للمناطق الآمنة فقط، والخطرة للدفاع المدني.']},
+ {t:'حالة وفاة داخل المدرسة', k:'none', r:'إخلاء جزئي وعزل الموقع', s:['عزل الموقع ومنع التجمهر والتصوير.','إبلاغ الجهات الأمنية والإسعافية فوراً.','لا إخلاء كامل إلا إذا ارتبطت الحالة بخطر آخر.','تفعيل الدعم النفسي للطالبات والمنسوبات المتأثرات.']},
+ {t:'سقوط شظايا أو صواريخ أو قذائف', k:'lock', r:'بقاء في الملاجئ مع إخلاء جزئي لاحق', s:['استلام التوجيهات الأمنية وتفعيل التعليم عن بعد عند الحاجة.','صافرات الإنذار والتوجه فوراً إلى الملاجئ أو الطوابق السفلية.','إغلاق النوافذ والأبواب وإطفاء الأنوار والابتعاد عن الزجاج.','عدم الخروج حتى انتهاء الخطر، وحصر الموجودات والإبلاغ عن المفقودات.','بعد انتهاء التوجيه: تقييم الأضرار ورفعه لإدارة التعليم.']},
+ {t:'أمطار غزيرة أو سيول', k:'mix', r:'إخلاء المناطق المنخفضة أو الموقع بالكامل', s:['متابعة تحذيرات الأرصاد ورفع الجاهزية.','فصل التيار عن الأجزاء المهددة بالمياه.','إخلاء الطوابق السفلية والمناطق المعرضة للغمر إلى أدوار عليا آمنة.','عند تصاعد الخطر: إخلاء كامل إلى موقع مرتفع مع تنسيق النقل.','بعد الانحسار: فحص المبنى والمعدات قبل إعادة التشغيل.']},
+ {t:'تسرّب وقود', k:'out', r:'إخلاء كامل فوري للمبنى ومنطقة الخطر', phone:1, s:['الإنذار وإخلاء المبنى إلى نقطة بعيدة عن مصدر التسرب.','منع مصادر الاشتعال وعدم تشغيل المفاتيح أو الجوالات قرب التسرب.','الاحتواء فقط إذا أمكن ذلك بأمان.','إبلاغ الدفاع المدني والهلال الأحمر والجهات البيئية مع بيان المادة والكمية.','حصر شامل وعدم العودة حتى إعلان خلو الموقع من الخطر.']},
+ {t:'طائرة بدون طيار مشبوهة', k:'in', r:'تعديل التشغيل أو إخلاء جزئي', s:['رصد الطائرة وتقييم الاشتباه دون محاولة اعتراضها.','إبلاغ غرفة العمليات الأمنية والشرطة والدفاع المدني فوراً.','إغلاق البوابات ومنع الدخول والخروج.','إبقاء الطالبات داخل الفصول وإغلاق النوافذ والستائر والابتعاد عنها.','نقل الموجودات في الساحات والملاعب إلى داخل المبنى.']},
+ {t:'نقص حاد في المياه', k:'none', r:'بقاء في المكان وإغلاق المرافق مع رفع الجاهزية', s:['تقييم سبب الانقطاع ومدته المتوقعة.','تفعيل الترشيد وإغلاق الصنابير غير الضرورية.','توزيع مياه الشرب المعبأة المخزنة مسبقاً.','إذا تجاوز الانقطاع ٢٤ ساعة: إخلاء جزئي أو تعليق الدراسة والتحول للتعليم عن بعد.']}
+];
+const FIRST = ['نورة','سارة','ريم','لمى','جود','رهف','شهد','غلا','لين','دانة','ريما','هيا','العنود','منيرة','أسيل','رزان','جنى','مها','وعد','ليان','ديما','تالا','روان','بشاير','أثير','غدير','حصة','نوف','شوق','رنا','لجين','وتين'];
+const FATHER = ['محمد','عبدالله','فهد','خالد','سعد','ناصر','عبدالعزيز','سلطان','تركي','فيصل','إبراهيم','صالح','علي','حمد','سليمان','ماجد'];
+const FAMILY = ['السالم','المحمد','الفهد','العبدالله','الناصر','الصالح','الإبراهيم','الحمد','السليمان','العلي','الخالد','السعد'];
+
+/* ---------- أدوات ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const AR = v => String(v).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+const rid = (n = 6) => Math.random().toString(36).slice(2, 2 + n);
+const now = () => Date.now();
+const mmss = ms => { if (ms == null || ms < 0) return '—'; const s = Math.floor(ms / 1000); return AR(String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0')); };
+const clock = t => t ? new Date(t).toLocaleTimeString('ar-SA-u-nu-arab', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}) : '—';
+const dayG = t => new Date(t).toLocaleDateString('ar-SA-u-ca-gregory-nu-arab', {year:'numeric', month:'long', day:'numeric', weekday:'long'});
+const dayH = t => { try { return new Date(t).toLocaleDateString('ar-SA-u-ca-islamic-umalqura-nu-arab', {year:'numeric', month:'long', day:'numeric'}); } catch (e) { return ''; } };
+const norm = s => String(s || '').replace(/[ً-ٰٟـ]/g, '').replace(/[أإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/\s+/g, ' ').trim();
+const inFrame = (() => { try { return window.self !== window.parent; } catch (e) { return true; } })();
+
+/* ---------- التخزين ---------- */
+const fresh = () => ({v:1, sid:rid(8), school:{name:'', stage:'', address:'', entrance:'', baseline:''}, classes:[], teacher:'', events:[], active:null, ts:null, view:'home', viewArg:null, role:'', share:true, outbox:[], sent:{}, lastBackup:null});
+let storageOK = true;
+let db = (() => { try { const s = localStorage.getItem(KEY); if (s) return Object.assign(fresh(), JSON.parse(s)); } catch (e) { storageOK = false; } return fresh(); })();
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(db)); storageOK = true; } catch (e) { storageOK = false; } };
+const clsById = id => db.classes.find(c => c.id === id);
+const activeSt = c => c.st.filter(s => !s.w);
+const ev = () => db.events.find(e => e.id === db.active) || null;
+
+/* ---------- واجهة عامة ---------- */
+let edit = null, scanState = null, partBuf = {}, qrPages = null, toastT = 0;
+const go = (view, arg = null) => { db.view = view; db.viewArg = arg; save(); render(); window.scrollTo(0, 0); };
+const toast = msg => { clearTimeout(toastT); const l = document.createElement('div'); l.className = 'toast'; l.setAttribute('role', 'status'); l.textContent = msg; document.querySelectorAll('.toast').forEach(x => x.remove()); document.body.appendChild(l); toastT = setTimeout(() => l.remove(), 3200); };
+const sheet = html => { clearTimeout(toastT); document.querySelectorAll('.toast').forEach(x => x.remove()); $('#layer').innerHTML = `<div class="scrim" data-a="closeScrim"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`; };
+const closeSheet = () => { stopCam(); $('#layer').innerHTML = ''; };
+let confirmCb = null;
+const ask = (msg, cb, yes = 'نعم') => { confirmCb = cb; sheet(`<h3>${esc(msg)}</h3><div class="btns"><button type="button" class="btn red" data-a="confirmYes">${esc(yes)}</button><button type="button" class="btn" data-a="close">إلغاء</button></div>`); };
+const copy = async (text, el) => { try { await navigator.clipboard.writeText(text); toast('نُسخ النص'); } catch (e) { if (el) { el.select(); } toast('حدّدي النص وانسخيه يدوياً'); } };
+let dlCap = null;
+try { if (window.claude && window.claude.use) window.claude.use('downloads').then(d => { dlCap = d; }).catch(() => {}); } catch (e) {}
+const download = async (name, text, type = 'application/json') => { if (dlCap) { try { await dlCap.save({filename:name, data:text}); toast('حُفظ الملف'); } catch (e) { toast('لم يُحفظ الملف'); } return; } try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type})); a.download = name; document.body.appendChild(a); a.click(); a.remove(); toast('بدأ التنزيل'); } catch (e) { toast('تعذّر التنزيل هنا، استخدمي النسخ'); } };
+
+/* ---------- ترميز الرموز ---------- */
+const b64 = s => { const b = new TextEncoder().encode(s); let bin = ''; for (const x of b) bin += String.fromCharCode(x); return btoa(bin); };
+const unb64 = s => new TextDecoder().decode(Uint8Array.from(atob(s), c => c.charCodeAt(0)));
+const encode = obj => 'HM2:' + b64(JSON.stringify(obj));
+const bytesB64 = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
+const pipe = async (stream, bytes) => { const w = stream.writable.getWriter(); w.write(bytes); w.close(); return new Uint8Array(await new Response(stream.readable).arrayBuffer()); };
+const encodeZ = async obj => { const s = JSON.stringify(obj); if (typeof CompressionStream === 'undefined') return encode(obj); return 'HM3:' + bytesB64(await pipe(new CompressionStream('deflate-raw'), new TextEncoder().encode(s))); };
+const split = (text, max = 900) => { if (text.length <= max) return [text]; const id = rid(4), n = Math.ceil(text.length / max); return Array.from({length:n}, (_, i) => `HMP|${id}|${i + 1}|${n}|${text.slice(i * max, (i + 1) * max)}`); };
+const qrSvg = text => { qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8']; const q = qrcode(0, text.length > 300 ? 'L' : 'M'); q.addData(text, 'Byte'); q.make(); return q.createSvgTag({cellSize:1, margin:3, scalable:true, alt:'رمز QR'}); };
+const receive = async raw => {
+  raw = String(raw || '').trim();
+  if (raw.startsWith('HMP|')) {
+    const [, id, i, n, ...rest] = raw.split('|');
+    const b = partBuf[id] || (partBuf[id] = {n:+n, got:{}});
+    b.got[i] = rest.join('|');
+    const got = Object.keys(b.got).length;
+    if (got < b.n) return {progress:[got, b.n]};
+    raw = Array.from({length:b.n}, (_, k) => b.got[k + 1]).join('');
+    delete partBuf[id];
+  }
+  if (raw.startsWith('HM3:')) { if (typeof DecompressionStream === 'undefined') throw new Error('هذا المتصفح قديم ولا يقرأ الرمز المضغوط'); return {obj:JSON.parse(new TextDecoder().decode(await pipe(new DecompressionStream('deflate-raw'), Uint8Array.from(atob(raw.slice(4)), c => c.charCodeAt(0)))))}; }
+  if (!raw.startsWith('HM2:')) throw new Error('هذا ليس رمزاً من نظام تطبيق حماية');
+  return {obj:JSON.parse(unb64(raw.slice(4)))};
+};
+
+/* ---------- الحساب ---------- */
+const agg = e => {
+  const matched = {}, unmatched = [];
+  for (const [cid, rep] of Object.entries(e.reports)) for (const x of rep.e || []) {
+    if (x[0] && clsById(x[0])) matched[x[0] + ':' + x[1]] = clsById(cid)?.name || '';
+    else unmatched.push({name:x[1], by:clsById(cid)?.name || ''});
+  }
+  const rows = [], missing = [], pending = [], injured = [], foundList = [];
+  for (const c of db.classes) {
+    const rep = e.reports[c.id], act = activeSt(c);
+    const row = {c, rep, reg:act.length, p:0, i:0, a:0, e:0, o:0, m:0, f:0, x:rep ? (rep.e || []).length : 0};
+    if (rep) for (const s of act) {
+      const info = rep.x[s.n] || {s:'p'}, k = c.id + ':' + s.n, fnd = matched[k] || (e.found || {})[k];
+      if ((info.s === 'm' || info.s === 'o') && fnd) { row.f++; foundList.push({c, s, where:fnd}); continue; }
+      row[info.s]++;
+      if (info.s === 'm') missing.push({c, s, info, t:rep.t});
+      if (info.s === 'o') pending.push({c, s, info, t:rep.t});
+      if (info.s === 'i') injured.push({c, s, info});
+    }
+    rows.push(row);
+  }
+  const reported = rows.filter(r => r.rep);
+  const all = reported.length === rows.length && rows.length > 0;
+  const done = all ? Math.max(...reported.map(r => r.rep.t)) : null;
+  const sum = k => rows.reduce((a, r) => a + r[k], 0);
+  return {rows, missing, pending, injured, foundList, unmatched, reported:reported.length, total:rows.length, all, done, reg:sum('reg'), p:sum('p'), i:sum('i'), a:sum('a'), ex:sum('e'), o:sum('o'), m:sum('m'), f:sum('f'), extras:sum('x')};
+};
+const rowCounts = r => ({today:r.reg - r.a - r.e, evac:r.p + r.i + r.f});
+
+/* ---------- Firebase: ملخصات بلا أسماء ---------- */
+const FB = (window.HIMAYA_FB && window.HIMAYA_FB.apiKey && window.HIMAYA_FB.projectId && !String(window.HIMAYA_FB.apiKey).includes('ضعي')) ? window.HIMAYA_FB : null;
+const fsBase = () => `https://firestore.googleapis.com/v1/projects/${FB.projectId}/databases/(default)/documents`;
+const fv = v => typeof v === 'number' ? (Number.isInteger(v) ? {integerValue:String(v)} : {doubleValue:v}) : {stringValue:String(v)};
+const unfv = f => f.integerValue != null ? +f.integerValue : f.doubleValue != null ? +f.doubleValue : (f.stringValue ?? '');
+const secs = ms => ms == null ? -1 : Math.round(ms / 1000);
+const summaryDoc = e => {
+  const a = agg(e), reps = Object.values(e.reports), rates = reps.map(r => r.r).filter(Boolean), qr = reps.filter(r => r.via === 'qr').length;
+  return {id:e.id, sid:db.sid, school:(db.school.name || 'بدون اسم').slice(0, 110), stage:(db.school.stage || '').slice(0, 30), type:EVT[e.type], scen:e.scen + 1, scenTitle:SCEN[e.scen].t, date:new Date(e.start).toISOString().slice(0, 10),
+    evacSec:e.evac ? secs(e.evac - e.start) : -1, countSec:a.all ? secs(a.done - e.start) : -1, classes:a.total, registered:a.reg, presentToday:a.reg - a.a - a.ex, unresolved:a.m, autoMatched:a.f, qr, manual:a.reported - qr,
+    lvMismatch:reps.filter(r => r.lvOk === false).length, rateAvg:rates.length ? Math.round(rates.reduce((p, q) => p + q, 0) / rates.length * 10) / 10 : -1, rateN:rates.length, baselineMin:db.school.baseline ? +db.school.baseline || -1 : -1, appV:'1.1'};
+};
+const syncLabel = id => !FB ? '' : db.sent && db.sent[id] ? 'أُرسل ملخص الأثر لصاحبة المبادرة' : (db.outbox || []).some(x => x.id === id) ? (db.share ? 'ملخص الأثر بانتظار الاتصال، وسيُرسل تلقائياً' : 'المشاركة متوقفة من الإعداد') : '';
+const paintSync = () => document.querySelectorAll('[data-sync]').forEach(el => { el.textContent = syncLabel(el.dataset.sync); });
+let flushing = false;
+const flush = async () => {
+  if (!FB || flushing || !db.share || !(db.outbox || []).length || navigator.onLine === false) return;
+  flushing = true;
+  try {
+    for (const d of [...db.outbox]) {
+      const fields = {}; for (const [k, v] of Object.entries(d)) if (k !== 'id' && k !== 'err') fields[k] = fv(v);
+      const r = await fetch(`${fsBase()}/events?documentId=${encodeURIComponent(d.id)}&key=${encodeURIComponent(FB.apiKey)}`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({fields})});
+      if (r.ok || r.status === 409) { db.outbox = db.outbox.filter(x => x.id !== d.id); (db.sent = db.sent || {})[d.id] = now(); save(); }
+      else { d.err = r.status; save(); break; }
+    }
+  } catch (e) {} finally { flushing = false; paintSync(); }
+};
+const queueSummary = e => { if (!FB) return; db.outbox = (db.outbox || []).filter(x => x.id !== e.id); db.outbox.push(summaryDoc(e)); save(); flush(); };
+let adminTok = null, adminRows = null;
+const adminLogin = async (email, pass) => {
+  const r = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${encodeURIComponent(FB.apiKey)}`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email, password:pass, returnSecureToken:true})});
+  if (!r.ok) throw new Error('البريد أو كلمة المرور غير صحيحة');
+  adminTok = (await r.json()).idToken;
+};
+const adminLoad = async () => {
+  const rows = []; let page = '';
+  do {
+    const r = await fetch(`${fsBase()}/events?pageSize=300&key=${encodeURIComponent(FB.apiKey)}${page ? '&pageToken=' + encodeURIComponent(page) : ''}`, {headers:{Authorization:'Bearer ' + adminTok}});
+    if (!r.ok) throw new Error(r.status === 403 ? 'لا تملكين صلاحية القراءة. راجعي البريد في قواعد Firestore' : 'تعذّر جلب البيانات');
+    const j = await r.json();
+    for (const d of j.documents || []) { const o = {id:d.name.split('/').pop()}; for (const [k, f] of Object.entries(d.fields || {})) o[k] = unfv(f); rows.push(o); }
+    page = j.nextPageToken || '';
+  } while (page);
+  adminRows = rows.sort((x, y) => String(y.date).localeCompare(String(x.date)));
+};
+
+/* ---------- بيانات تجريبية ---------- */
+const demo = () => {
+  let seed = 7; const rnd = n => { seed = seed * 16807 % 2147483647; return seed % n; };
+  const names = ['١/أ','١/ب','٢/أ','٢/ب','٣/أ','٣/ب','أول ثانوي/أ','ثاني ثانوي/أ'];
+  db.school = Object.assign(db.school, {name:db.school.name || 'مدرسة تجريبية', stage:db.school.stage || 'متوسطة وثانوية', address:db.school.address || 'الحي التجريبي – الشارع الرئيسي', entrance:db.school.entrance || 'البوابة الشرقية'});
+  db.classes = names.map((nm, ci) => {
+    const count = 22 + rnd(7), seen = new Set(), st = [];
+    while (st.length < count) { const n = `${FIRST[rnd(FIRST.length)]} ${FATHER[rnd(FATHER.length)]} ${FAMILY[rnd(FAMILY.length)]}`; if (!seen.has(n)) { seen.add(n); st.push({n:st.length + 1, name:n, w:false}); } }
+    return {id:'c' + rid(5), name:nm, room:`الدور ${ci < 4 ? 'الأرضي' : 'الأول'} – قاعة ${AR(ci % 4 + 1)}`, lv:1, st, demo:true};
+  });
+  db.master = true; save();
+};
+
+/* ---------- العرض ---------- */
+function render() {
+  const s = db.school.name;
+  $('#sub').textContent = s ? s : 'النسخة الميدانية';
+  $('#homeBtn').style.visibility = db.view === 'home' ? 'hidden' : 'visible';
+  $('#bar').innerHTML = '';
+  const v = {home:vHome, setup:vSetup, teacher:vTeacher, officer:vOfficer, scen:vScen, report:vReport, history:vHistory, olist:vList, tlist:vList, tdone:vTDone, admin:vAdmin}[db.view] || vHome;
+  $('#app').innerHTML = v();
+  tick();
+}
+
+function vHome() {
+  const e = ev();
+  return `<h2>جاهزية الإخلاء والحصر</h2>
+  <p class="lead">تعمل دون إنترنت بعد أول فتح، وكل البيانات محفوظة على هذا الجهاز فقط.</p>
+  ${!storageOK ? `<div class="warn">التخزين غير متاح في هذا المتصفح، فلن تُحفظ البيانات بعد إغلاق الصفحة.</div>` : ''}
+  ${inFrame ? `<div class="warn">هذه نسخة معاينة: الكاميرا الحية والطباعة تعملان في النسخة المنشورة على الرابط الخاص بالمدرسة. هنا امسحي الرمز بالتقاط صورة له.</div>` : ''}
+  ${e ? `<button type="button" class="alarm" style="width:100%;text-align:start;cursor:pointer" data-a="go" data-v="officer"><h4>${esc(EVT[e.type])} جارٍ منذ <span data-tick="${e.start}">${mmss(now() - e.start)}</span></h4>افتحي شاشة الحصر</button>` : ''}
+  ${db.classes.length && db.master && (!db.lastBackup || now() - db.lastBackup > 14 * 864e5) ? `<div class="warn">${db.lastBackup ? 'مضى أكثر من أسبوعين على آخر نسخة احتياطية.' : 'لم تُحفظ نسخة احتياطية بعد.'} <button type="button" class="btn sm" data-a="dlBackup">حفظ نسخة الآن</button></div>` : ''}
+  ${!db.classes.length ? `<div class="okbox"><b>ابدئي من الإعداد</b><br>أدخلي قوائم الفصول، أو جرّبي النظام ببيانات تجريبية.<div class="btns"><button type="button" class="btn pri" data-a="demo">تحميل بيانات تجريبية</button><button type="button" class="btn" data-a="go" data-v="setup">الإعداد والقوائم</button></div></div>` : ''}
+  <div class="tiles">
+    <button type="button" class="tile main" data-a="go" data-v="officer"><b>مسؤولة الحصر</b><span>بدء الحدث، مسح الرموز، المفقودات</span></button>
+    <button type="button" class="tile main" data-a="go" data-v="teacher"><b>المعلمة</b><span>حصر الفصل الذي معك الآن</span></button>
+    <button type="button" class="tile" data-a="go" data-v="scen"><b>الفرضيات</b><span>${AR(19)} فرضية وخطوات الاستجابة</span></button>
+    <button type="button" class="tile" data-a="go" data-v="setup"><b>الإعداد والقوائم</b><span>المدرسة، الفصول، النقل، النسخ الاحتياطي</span></button>
+    <button type="button" class="tile" data-a="go" data-v="history"><b>السجل والتقارير</b><span>${AR(db.events.length)} حدث مسجّل</span></button>
+  </div>
+  <p class="note">${db.classes.length ? `${AR(db.classes.length)} فصول و${AR(db.classes.reduce((a, c) => a + activeSt(c).length, 0))} طالبة على هذا الجهاز.` : ''}${db.classes.some(c => c.demo) ? ' البيانات الحالية تجريبية.' : ''}</p>`;
+}
+
+/* ----- الإعداد ----- */
+function vSetup() {
+  const sc = db.school;
+  return `<h2>الإعداد والقوائم</h2>
+  <p class="lead">تُدخل مرة واحدة على جهاز القائدة، ثم تُنقل لجوالات المعلمات.</p>
+  <div class="card"><h3 style="margin-top:0">بيانات المدرسة</h3>
+    <label class="f"><span>اسم المدرسة</span><input type="text" id="s-name" data-f="school.name" value="${esc(sc.name)}"></label>
+    <label class="f"><span>المرحلة</span><select id="s-stage" data-f="school.stage">${['','ابتدائية','متوسطة','ثانوية','متوسطة وثانوية','رياض أطفال','أخرى'].map(o => `<option ${o === sc.stage ? 'selected' : ''}>${o}</option>`).join('')}</select></label>
+    <label class="f"><span>الموقع (الحي والشارع)</span><input type="text" id="s-addr" data-f="school.address" value="${esc(sc.address)}"></label>
+    <label class="f"><span>مدخل فرق الطوارئ</span><input type="text" id="s-ent" data-f="school.entrance" value="${esc(sc.entrance)}" placeholder="مثل: البوابة الشرقية"></label>
+    <label class="f"><span>زمن آخر حصر ورقي بالدقائق (للمقارنة)</span><input type="number" id="s-base" inputmode="decimal" data-f="school.baseline" value="${esc(sc.baseline)}"></label>
+  </div>
+  <div class="card"><h3 style="margin-top:0">الفصول (${AR(db.classes.length)})</h3>
+    <div class="list">${db.classes.map(c => `<button type="button" class="row" data-a="editCls" data-id="${c.id}"><span class="nm">${esc(c.name)}<span class="sub">${esc(c.room || 'بلا قاعة')} · إصدار القائمة ${AR(c.lv)}</span></span><span class="chip c-p">${AR(activeSt(c).length)} طالبة</span></button>`).join('') || '<p class="note">لا توجد فصول بعد.</p>'}</div>
+    <div class="btns"><button type="button" class="btn pri" data-a="importDlg">استيراد من Excel</button><button type="button" class="btn" data-a="addCls">إضافة فصل</button><button type="button" class="btn" data-a="demo">بيانات تجريبية</button></div>
+    <p class="note">الطالبة الجديدة تُضاف في آخر القائمة، والمنسحبة تُعلَّم ولا تُحذف، حتى لا تتغير أرقام البقية.</p>
+  </div>
+  <div class="card"><h3 style="margin-top:0">نقل القوائم إلى جوالات المعلمات</h3>
+    <p class="note">تستقبلها المعلمة من شاشة «المعلمة». الأفضل النقل بالرمز أو بالمشاركة القريبة بين الجوالين، وتجنّب مجموعات المراسلة.</p>
+    <div class="btns"><button type="button" class="btn pri" data-a="showPkg" ${db.classes.length ? '' : 'disabled'}>عرض رمز القوائم</button><button type="button" class="btn" data-a="dlPkg" ${db.classes.length ? '' : 'disabled'}>تنزيل ملف القوائم</button><button type="button" class="btn" data-a="copyPkg" ${db.classes.length ? '' : 'disabled'}>نسخ القوائم كنص</button></div>
+  </div>
+  ${FB ? `<div class="card"><h3 style="margin-top:0">مشاركة ملخصات الأثر</h3>
+    <label class="note" style="display:flex;gap:8px;align-items:flex-start;font-size:15px;color:var(--ink)"><input type="checkbox" id="s-share" ${db.share ? 'checked' : ''} style="width:22px;height:22px;flex:none"> إرسال ملخص كل تمرين إلى صاحبة المبادرة لقياس الأثر</label>
+    <p class="note">يُرسل: اسم المدرسة ومرحلتها، ونوع التمرين والفرضية، والأزمنة، وأعداد الطالبات والفصول، ومتوسط تقييم السهولة. لا يُرسل أي اسم طالبة أو معلمة. ${(db.outbox || []).length ? `بانتظار الإرسال: ${AR(db.outbox.length)}.` : ''}</p></div>` : ''}
+  <div class="card"><h3 style="margin-top:0">النسخة الاحتياطية</h3>
+    ${db.lastBackup ? `<p class="note">آخر نسخة: ${esc(dayG(db.lastBackup))}</p>` : ''}
+    <p class="note">احفظي نسخة بعد كل تعديل، وانقليها لجهاز نائبتك.</p>
+    <div class="btns"><button type="button" class="btn" data-a="dlBackup">حفظ نسخة</button><button type="button" class="btn" data-a="copyBackup">نسخ النسخة كنص</button><button type="button" class="btn" data-a="openJson">استرجاع من ملف</button><button type="button" class="btn" data-a="pasteDlg">استرجاع من نص</button></div>
+  </div>
+  ${FB ? `<div class="btns"><button type="button" class="btn sm" data-a="go" data-v="admin">دخول صاحبة المبادرة</button></div>` : ''}
+  <div class="card"><h3 style="margin-top:0">مسح البيانات</h3><div class="btns"><button type="button" class="btn red" data-a="wipe">مسح كل بيانات هذا الجهاز</button></div></div>`;
+}
+
+const clsDlg = c => sheet(`<h3>${c ? 'تعديل فصل' : 'إضافة فصل'}</h3>
+  <label class="f"><span>اسم الفصل</span><input type="text" id="c-name" value="${esc(c?.name || '')}" placeholder="مثل: ٢/ب"></label>
+  <label class="f"><span>القاعة وموقعها</span><input type="text" id="c-room" value="${esc(c?.room || '')}"></label>
+  ${c ? `<h3>الطالبات</h3><div class="list">${c.st.map(s => `<div class="row" style="cursor:default"><span class="n">${AR(s.n)}</span><input type="text" data-sn="${s.n}" value="${esc(s.name)}" aria-label="اسم الطالبة ${s.n}"><label class="note" style="white-space:nowrap"><input type="checkbox" data-sw="${s.n}" ${s.w ? 'checked' : ''}> منسحبة</label></div>`).join('')}</div>` : ''}
+  <label class="f"><span>إضافة أسماء جديدة (اسم في كل سطر)</span><textarea id="c-add"></textarea></label>
+  <div class="btns"><button type="button" class="btn pri" data-a="saveCls" data-id="${c?.id || ''}">حفظ</button>${c ? `<button type="button" class="btn red" data-a="delCls" data-id="${c.id}">حذف الفصل</button>` : ''}<button type="button" class="btn" data-a="close">إلغاء</button></div>`);
+
+const parseImport = text => {
+  let added = 0, made = 0;
+  for (const line of text.split(/\r?\n/)) {
+    const p = line.split(/\t|;|,/).map(x => x.trim()).filter(Boolean);
+    if (p.length < 2) continue;
+    const [cn, sn, room] = p;
+    if (/الفصل|الصف/.test(cn) && /اسم/.test(sn)) continue;
+    let c = db.classes.find(x => norm(x.name) === norm(cn));
+    if (!c) { c = {id:'c' + rid(5), name:cn, room:room || '', lv:1, st:[]}; db.classes.push(c); made++; }
+    if (c.st.some(s => norm(s.name) === norm(sn))) continue;
+    c.st.push({n:c.st.length + 1, name:sn, w:false});
+    if (!c._touched) { c._touched = 1; if (c.st.length > 1) c.lv++; }
+    added++;
+  }
+  db.classes.forEach(c => delete c._touched);
+  db.master = true; save();
+  return {added, made};
+};
+
+const pkgText = (only = null) => encodeZ({k:'cls', sid:db.sid, sn:db.school.name, cls:db.classes.filter(c => !only || c.id === only).map(c => ({id:c.id, name:c.name, room:c.room, lv:c.lv, st:c.st.map(s => [s.n, s.name, s.w ? 1 : 0])}))});
+const showQR = (texts, title, note) => { qrPages = {texts, i:0, title, note}; drawQR(); };
+const drawQR = () => {
+  const q = qrPages, n = q.texts.length;
+  sheet(`<h3>${esc(q.title)}</h3><p class="note">${esc(q.note)}</p>
+  ${n > 1 ? `<p style="text-align:center;font-weight:700">الرمز ${AR(q.i + 1)} من ${AR(n)}</p>` : ''}
+  <div class="qr">${qrSvg(q.texts[q.i])}</div>
+  <div class="btns">${n > 1 ? `<button type="button" class="btn" data-a="qrPrev" ${q.i ? '' : 'disabled'}>السابق</button><button type="button" class="btn pri" data-a="qrNext" ${q.i < n - 1 ? '' : 'disabled'}>التالي</button>` : ''}<button type="button" class="btn" data-a="close">إغلاق</button></div>`);
+};
+
+/* ----- المعلمة ----- */
+function vTeacher() {
+  if (db.ts) { db.view = db.ts.t ? 'tdone' : 'tlist'; save(); return db.ts.t ? vTDone() : vList(); }
+  const sc = SCEN.filter(s => s.phone).map(s => s.t).join(' أو ');
+  return `<h2>اختاري الفصل الذي معك الآن</h2>
+  <p class="lead">اضغطي على الفصل لبدء الحصر في نقطة التجمع.</p>
+  <div class="warn">في ${esc(sc)}: لا تفتحي الجوال إلا بعد الخروج من المبنى.</div>
+  ${db.classes.length ? `<div class="grid">${db.classes.map(c => `<button type="button" class="cls" data-a="tStart" data-id="${c.id}"><b>${esc(c.name)}</b><span>${AR(activeSt(c).length)} طالبة</span></button>`).join('')}</div>` : `<div class="okbox"><b>لا توجد قوائم على هذا الجهاز</b><br>استلميها من مسؤولة الحصر أو القائدة.</div>`}
+  <div class="card"><h3 style="margin-top:0">استلام القوائم</h3>
+    <div class="btns"><button type="button" class="btn pri" data-a="scan" data-for="cls">مسح رمز القوائم</button><button type="button" class="btn" data-a="openJson">فتح ملف القوائم</button><button type="button" class="btn" data-a="pasteDlg">لصق نص القوائم</button></div>
+    <label class="f"><span>اسمك (يظهر في التقرير)</span><input type="text" id="t-name" data-f="teacher" value="${esc(db.teacher)}"></label>
+  </div>`;
+}
+function startTeacher(cid) { db.ts = {cid, loc:null, x:{}, e:[], start:now(), t:null, r:null}; edit = {mode:'t', ref:db.ts}; db.view = 'tlist'; save(); render(); locDlg(); }
+const locDlg = () => sheet(`<h3>أين كان الفصل وقت الإنذار؟</h3><div class="list">${Object.entries(LOC).map(([k, v]) => `<button type="button" class="btn big ${k === 'room' ? 'pri' : ''}" data-a="setLoc" data-k="${k}">${esc(v)}</button>`).join('')}</div>`);
+
+/* ----- قائمة الحصر (مشتركة) ----- */
+function curEdit() {
+  if (db.view === 'tlist' && db.ts) return {mode:'t', ref:db.ts};
+  if (db.view === 'olist' && edit && edit.mode === 'o') return edit;
+  return null;
+}
+function vList() {
+  const ed = curEdit();
+  if (!ed) { db.view = 'home'; return vHome(); }
+  const r = ed.ref, c = clsById(r.cid);
+  if (!c) { db.ts = null; db.view = 'teacher'; save(); return vTeacher(); }
+  const act = activeSt(c);
+  const cnt = {p:0, i:0, a:0, e:0, o:0, m:0}; act.forEach(s => cnt[(r.x[s.n] || {s:'p'}).s]++);
+  const standing = cnt.p + cnt.i + r.e.length;
+  const miss = act.filter(s => (r.x[s.n] || {}).s === 'm');
+  $('#bar').innerHTML = `<div class="bar"><div class="cnt">يقف أمامك الآن<b>${AR(standing)} طالبة</b></div><button type="button" class="btn pri" style="min-height:56px" data-a="${ed.mode === 't' ? 'tFinish' : 'oSave'}">${ed.mode === 't' ? 'العدد مطابق — إنهاء' : 'حفظ الحصر'}</button></div>`;
+  return `<h2>حصر ${esc(c.name)}</h2>
+  <p class="lead">الكل «حاضرة» تلقائياً. اضغطي على من ليست أمامك فقط. ${r.loc ? `<button type="button" class="btn sm" data-a="relocate">الموقع: ${esc(LOC[r.loc])}</button>` : ''}</p>
+  ${miss.length ? `<div class="alarm"><h4>بلّغي القائدة فوراً</h4>${miss.map(s => `${esc(s.name)} — ${esc(LS[r.x[s.n].l] || 'لم يُحدد آخر موقع')}`).join('<br>')}</div>` : ''}
+  <div class="stats"><div class="stat"><b>${AR(cnt.p + cnt.i)}</b><span>حاضرة${cnt.i ? ` (مصابة ${AR(cnt.i)})` : ''}</span></div><div class="stat"><b>${AR(cnt.a + cnt.e)}</b><span>غائبة أو مستأذنة</span></div><div class="stat a"><b>${AR(cnt.o)}</b><span>مع مجموعة أخرى</span></div><div class="stat r"><b>${AR(cnt.m)}</b><span>مفقودة</span></div></div>
+  <div class="list">${act.map(s => { const x = r.x[s.n] || {s:'p'}; return `<button type="button" class="row st-${x.s}" data-a="pick" data-n="${s.n}"><span class="n">${AR(s.n)}</span><span class="nm">${esc(s.name)}${x.s === 'm' ? `<span class="sub">${esc(LS[x.l] || '')}${x.note ? ' · ' + esc(x.note) : ''}</span>` : ''}</span><span class="chip c-${x.s}">${ST[x.s]}</span></button>`; }).join('')}</div>
+  <h3>طالبات من فصول أخرى معك (${AR(r.e.length)})</h3>
+  <div class="list">${r.e.map((x, i) => `<div class="row" style="cursor:default"><span class="nm">${x[0] ? esc((clsById(x[0])?.st.find(s => s.n === x[1]) || {}).name || '؟') + `<span class="sub">من ${esc(clsById(x[0])?.name || '')}</span>` : esc(x[1]) + '<span class="sub">غير موجودة في القوائم</span>'}</span><button type="button" class="btn sm" data-a="delExtra" data-i="${i}">إزالة</button></div>`).join('')}</div>
+  <div class="btns"><button type="button" class="btn" data-a="extraDlg">+ إضافة طالبة من فصل آخر</button>${ed.mode === 't' ? '<button type="button" class="btn" data-a="tCancel">إلغاء الحصر</button>' : '<button type="button" class="btn" data-a="go" data-v="officer">رجوع</button>'}</div>`;
+}
+const pickDlg = n => {
+  const ed = curEdit(), c = clsById(ed.ref.cid), s = c.st.find(x => x.n === n), cur = (ed.ref.x[n] || {s:'p'}).s;
+  sheet(`<h3>${esc(s.name)}</h3><div class="list">${Object.entries(ST).map(([k, v]) => `<button type="button" class="btn big ${k === cur ? 'pri' : ''} ${k === 'm' ? 'red' : ''}" data-a="setSt" data-n="${n}" data-k="${k}">${v}</button>`).join('')}</div><button type="button" class="btn" data-a="close">إغلاق</button>`);
+};
+const lastDlg = n => {
+  const ed = curEdit(), s = clsById(ed.ref.cid).st.find(x => x.n === n), x = ed.ref.x[n] || {};
+  sheet(`<h3>آخر موقع رأيتِ فيه ${esc(s.name)}</h3><div class="list">${Object.entries(LS).map(([k, v]) => `<button type="button" class="btn big ${x.l === k ? 'pri' : ''}" data-a="setLast" data-n="${n}" data-k="${k}">${v}</button>`).join('')}</div>
+  <label class="f"><span>ملاحظة (اختيارية)</span><input type="text" id="lastNote" value="${esc(x.note || '')}"></label>
+  <button type="button" class="btn red big" data-a="setLast" data-n="${n}" data-k="${x.l || 'u'}">حفظ وإبلاغ</button>`);
+};
+const extraDlg = (cid = null) => {
+  const ed = curEdit();
+  if (!cid) return sheet(`<h3>من أي فصل؟</h3><div class="grid">${db.classes.filter(c => c.id !== ed.ref.cid).map(c => `<button type="button" class="cls" data-a="extraCls" data-id="${c.id}"><b>${esc(c.name)}</b></button>`).join('')}</div>
+    <label class="f"><span>أو اكتبي اسمها إن لم تكن في القوائم (زائرة مثلاً)</span><input type="text" id="exName"></label><div class="btns"><button type="button" class="btn pri" data-a="extraFree">إضافة</button><button type="button" class="btn" data-a="close">إلغاء</button></div>`);
+  const c = clsById(cid);
+  sheet(`<h3>من ${esc(c.name)}</h3><label class="f"><span>بحث بالاسم</span><input type="text" id="exQ" data-a2="filter" autocomplete="off"></label><div class="list" id="exList">${activeSt(c).map(s => `<button type="button" class="row" data-a="extraAdd" data-id="${cid}" data-n="${s.n}" data-q="${esc(norm(s.name))}"><span class="n">${AR(s.n)}</span><span class="nm">${esc(s.name)}</span></button>`).join('')}</div>`);
+};
+
+/* ----- إنهاء حصر المعلمة ----- */
+const resultPayload = () => {
+  const r = db.ts, c = clsById(r.cid);
+  return encode({k:'res', sid:db.sid, c:r.cid, lv:c.lv, t:r.t, l:r.loc, by:db.teacher || '', x:Object.entries(r.x).map(([n, v]) => [+n, v.s, v.l || '', v.note || '']), e:r.e, r:r.r});
+};
+function vTDone() {
+  const r = db.ts, c = clsById(r.cid);
+  if (!c) { db.ts = null; return vTeacher(); }
+  const miss = activeSt(c).filter(s => (r.x[s.n] || {}).s === 'm');
+  const e = ev();
+  return `<h2>انتهى حصر ${esc(c.name)}</h2>
+  ${miss.length ? `<div class="alarm"><h4>بلّغي القائدة فوراً بالصوت أو اللاسلكي</h4>${miss.map(s => `<b>${esc(s.name)}</b> (${esc(c.name)}) — آخر موقع: ${esc(LS[r.x[s.n].l] || 'لا أعرف')}${r.x[s.n].note ? ' · ' + esc(r.x[s.n].note) : ''}`).join('<br>')}</div>` : `<div class="okbox"><b>لا مفقودات في هذا الفصل.</b></div>`}
+  <p style="text-align:center;margin:6px 0 0">اعرضي هذا الرمز على مسؤولة الحصر</p>
+  <div class="qr">${qrSvg(resultPayload())}</div>
+  <div class="card"><b>ما مدى سهولة الحصر؟</b><div class="seg" style="margin-top:8px">${[1, 2, 3, 4, 5].map(v => `<button type="button" aria-pressed="${r.r === v}" data-a="rate" data-v="${v}">${AR(v)}</button>`).join('')}</div><p class="note">١ صعب جداً · ٥ سهل جداً. يُرسل التقييم مع الرمز.</p></div>
+  <div class="btns">${e ? `<button type="button" class="btn" data-a="selfSubmit">تسجيل في هذا الجهاز (للتجربة)</button>` : ''}<button type="button" class="btn" data-a="tEdit">تعديل الحصر</button><button type="button" class="btn pri" data-a="tNew">حصر جديد</button></div>`;
+}
+
+/* ----- مسؤولة الحصر ----- */
+let newType = 'ann', newScen = 1;
+function vOfficer() {
+  const e = ev();
+  if (!db.classes.length) return `<h2>مسؤولة الحصر</h2><div class="okbox">لا توجد قوائم فصول على هذا الجهاز. <div class="btns"><button type="button" class="btn pri" data-a="go" data-v="setup">الإعداد والقوائم</button><button type="button" class="btn" data-a="demo">بيانات تجريبية</button></div></div>`;
+  if (!e) return `<h2>بدء حدث جديد</h2><p class="lead">يُسجَّل وقت الإنذار لحظة الضغط على زر البدء.</p>
+    <div class="card"><b>النوع</b><div class="seg" style="margin-top:8px">${Object.entries(EVT).map(([k, v]) => `<button type="button" aria-pressed="${newType === k}" data-a="nType" data-k="${k}">${v}</button>`).join('')}</div>
+    <label class="f"><span>الفرضية</span><select id="nScen">${SCEN.map((s, i) => `<option value="${i}" ${i === newScen ? 'selected' : ''}>${AR(i + 1)}. ${esc(s.t)}</option>`).join('')}</select></label>
+    <div id="nScenCard">${scenCard(SCEN[newScen], newScen, true)}</div></div>
+    <button type="button" class="btn red big" data-a="startEv">بدء — تسجيل وقت الإنذار الآن</button>
+    <div class="btns"><button type="button" class="btn" data-a="go" data-v="history">السجل والتقارير</button></div>`;
+  const a = agg(e), sc = SCEN[e.scen];
+  $('#bar').innerHTML = `<div class="bar"><button type="button" class="btn pri" style="flex:1;min-height:58px;font-size:18px" data-a="scan" data-for="res">مسح رمز معلمة</button><button type="button" class="btn" style="min-height:58px" data-a="endEv">إنهاء</button></div>`;
+  return `<div class="two"><div>
+    <p class="note" style="margin:4px 0">${esc(EVT[e.type])} · ${esc(sc.t)} · بدأ ${clock(e.start)}</p>
+    <div class="timer" data-tick="${e.start}" aria-live="off">${mmss(now() - e.start)}</div>
+    <div class="btns"><button type="button" class="btn sm" data-a="showScen">خطوات الفرضية</button>${e.evac ? `<span class="chip c-p">اكتمل الإخلاء ${mmss(e.evac - e.start)}</span><button type="button" class="btn sm" data-a="evac">تعديل</button>` : `<button type="button" class="btn sm pri" data-a="evac">اكتمل الإخلاء (خرجت آخر مجموعة)</button>`}</div>
+    ${a.all ? (a.m ? `<div class="alarm"><h4>اكتمل الحصر في ${mmss(a.done - e.start)} — توجد مفقودات</h4>بلّغي الدفاع المدني فوراً بالأسماء وآخر موقع.</div>` : `<div class="okbox"><b>اكتمل الحصر في ${mmss(a.done - e.start)} دون مفقودات.</b>${a.o ? ` بقيت ${AR(a.o)} «مع مجموعة أخرى» تحتاج تأكيداً.` : ''}</div>`) : ''}
+    <div class="stats"><div class="stat"><b>${AR(a.reported)}/${AR(a.total)}</b><span>فصول بلّغت</span></div><div class="stat r"><b>${AR(a.m)}</b><span>مفقودة</span></div><div class="stat a"><b>${AR(a.o)}</b><span>بانتظار التأكيد</span></div><div class="stat"><b>${AR(a.p + a.i + a.f)}</b><span>في نقطة التجمع</span></div></div>
+    ${a.missing.length ? `<div class="alarm"><h4>المفقودات (${AR(a.missing.length)})</h4><div class="list">${a.missing.map(m => `<div class="row" style="cursor:default;background:var(--card)"><span class="nm"><b>${esc(m.s.name)}</b><span class="sub">${esc(m.c.name)} · آخر موقع: ${esc(LS[m.info.l] || 'لا أعرف')}${m.info.note ? ' · ' + esc(m.info.note) : ''} · بُلّغ ${clock(m.t)}</span></span><button type="button" class="btn sm" data-a="found" data-k="${m.c.id}:${m.s.n}">وُجدت</button></div>`).join('')}</div></div>` : ''}
+    ${a.pending.length ? `<div class="warn"><b>مع مجموعة أخرى ولم تُطابق بعد (${AR(a.pending.length)})</b><div class="list">${a.pending.map(m => `<div class="row" style="cursor:default"><span class="nm">${esc(m.s.name)}<span class="sub">${esc(m.c.name)}</span></span><button type="button" class="btn sm" data-a="found" data-k="${m.c.id}:${m.s.n}">تأكدت من وجودها</button></div>`).join('')}</div></div>` : ''}
+    ${a.unmatched.length ? `<div class="card"><b>زائدات غير مسجّلات في القوائم</b><br>${a.unmatched.map(u => `${esc(u.name)} (مع ${esc(u.by)})`).join('، ')}</div>` : ''}
+  </div><div>
+    <h3>الفصول</h3><p class="note">اضغطي على الفصل للإدخال اليدوي إن لم يكن مع المعلمة جوال.</p>
+    <div class="grid">${a.rows.map(r => { const st = !r.rep ? '' : r.m ? 'bad' : r.o ? 'wait' : 'ok'; return `<button type="button" class="cls ${st}" data-a="clsSheet" data-id="${r.c.id}"><b>${esc(r.c.name)}</b><span>${!r.rep ? 'لم يبلّغ' : r.m ? `مفقودة ${AR(r.m)}` : r.o ? `بانتظار ${AR(r.o)}` : 'مكتمل'}</span>${r.rep ? `<span>${clock(r.rep.t)} · ${r.rep.via === 'qr' ? 'رمز' : 'يدوي'}${r.rep.lvOk === false ? ' · إصدار مختلف' : ''}</span>` : ''}</button>`; }).join('')}</div>
+  </div></div>`;
+}
+const scenCard = (s, i, open) => `<div class="card scen k-${s.k}"><details ${open ? 'open' : ''}><summary>${AR(i + 1)}. ${esc(s.t)}</summary><p style="margin:4px 0"><span class="chip ${s.k === 'out' ? 'c-p' : s.k === 'lock' ? 'c-m' : s.k === 'none' ? 'c-a' : 'c-o'}">${KIND[s.k]}</span> ${esc(s.r)}</p><ol>${s.s.map(x => `<li>${esc(x)}</li>`).join('')}</ol></details></div>`;
+const clsSheetDlg = cid => {
+  const e = ev(), c = clsById(cid), rep = e.reports[cid];
+  if (!rep) return sheet(`<h3>${esc(c.name)} — لم يبلّغ بعد</h3><p class="note">إن كانت المعلمة أمامك دون جوال، سجّلي ما تقوله.</p><div class="list"><button type="button" class="btn pri big" data-a="manualAll" data-id="${cid}">مكتمل — كلهن حاضرات</button><button type="button" class="btn big" data-a="manualList" data-id="${cid}">تسجيل حالات (غياب، مفقودة…)</button></div><button type="button" class="btn" data-a="close">إغلاق</button>`);
+  const xs = Object.entries(rep.x).filter(([, v]) => v.s !== 'p');
+  sheet(`<h3>${esc(c.name)}</h3><p>بلّغ ${clock(rep.t)} · ${rep.via === 'qr' ? 'بالرمز' : 'يدوياً'}${rep.by ? ' · ' + esc(rep.by) : ''} · الموقع: ${esc(LOC[rep.l] || '—')}</p>
+  ${rep.lvOk === false ? '<div class="warn">إصدار القائمة على جوال المعلمة يختلف عن هذا الجهاز. راجعي الأسماء معها.</div>' : ''}
+  <div class="list">${xs.map(([n, v]) => `<div class="row st-${v.s}" style="cursor:default"><span class="n">${AR(n)}</span><span class="nm">${esc((c.st.find(s => s.n === +n) || {}).name || '؟')}</span><span class="chip c-${v.s}">${ST[v.s]}</span></div>`).join('') || '<p class="note">كلهن حاضرات.</p>'}</div>
+  <div class="btns"><button type="button" class="btn" data-a="manualList" data-id="${cid}">تعديل يدوي</button><button type="button" class="btn red" data-a="unreport" data-id="${cid}">إلغاء البلاغ</button><button type="button" class="btn" data-a="close">إغلاق</button></div>`);
+};
+const applyResult = o => {
+  const e = ev();
+  if (!e) return toast('لا يوجد حدث جارٍ. ابدئي حدثاً أولاً');
+  if (o.sid !== db.sid) return toast('هذا الرمز من مدرسة أو قوائم أخرى');
+  const c = clsById(o.c);
+  if (!c) return toast('الفصل غير موجود على هذا الجهاز');
+  const x = {}; for (const [n, s, l, note] of o.x || []) x[n] = {s, l, note};
+  e.reports[o.c] = {t:o.t || now(), by:o.by || '', l:o.l, via:'qr', x, e:o.e || [], r:o.r || null, lvOk:o.lv === c.lv};
+  save();
+  const m = Object.values(x).filter(v => v.s === 'm').length;
+  toast(`تم: ${c.name}${m ? ` — مفقودة ${m}` : ' — مكتمل'}${o.lv !== c.lv ? ' (إصدار مختلف)' : ''}`);
+};
+
+/* ----- التقرير ----- */
+function vReport() {
+  const e = db.events.find(x => x.id === db.viewArg);
+  if (!e) return vHistory();
+  const a = agg(e), sc = SCEN[e.scen], s = db.school;
+  const rates = Object.values(e.reports).map(r => r.r).filter(Boolean);
+  const avg = rates.length ? (rates.reduce((p, q) => p + q, 0) / rates.length).toFixed(1) : null;
+  const qr = Object.values(e.reports).filter(r => r.via === 'qr').length;
+  const chalet = `بلاغ CHALET — ${s.name}
+الوقت: ${clock(now())}
+C — الإصابات والمفقودات: مصابات ${AR(a.injured.length)}${a.injured.length ? ' (' + a.injured.map(x => x.s.name + ' – ' + x.c.name).join('، ') + ')' : ''}. مفقودات ${AR(a.missing.length)}${a.missing.length ? ': ' + a.missing.map(m => `${m.s.name} – ${m.c.name} – آخر موقع: ${LS[m.info.l] || 'غير معروف'}`).join('؛ ') : ''}.
+H — الأخطار: ${sc.t}.
+A — الوصول: ${s.entrance || '—'}.
+L — الموقع: ${s.name}${s.address ? ' – ' + s.address : ''}.
+E — المطلوب من خدمات الطوارئ:
+T — نوع الحادث: ${sc.t}.`;
+  const drill = e.type !== 'real';
+  const parent = drill
+    ? `السادة أولياء الأمور، نفّذت ${s.name} اليوم ${EVT[e.type]} (${sc.t}) ضمن خطة الإخلاء والسلامة. ${a.all && !a.m ? `اكتمل حصر الطالبات في ${mmss(a.done - e.start)} دون مفقودات.` : 'وتُستكمل الملاحظات حسب الخطة.'} شاكرين تعاونكم.`
+    : `السادة أولياء الأمور، حرصاً على سلامة بناتنا نحيطكم علماً بأنه تم تفعيل خطة الطوارئ في ${s.name} بسبب ${sc.t}. الإجراء المتخذ: ${sc.r}. حالة الطالبات حتى ${clock(now())}: ${a.all ? (a.m ? 'اكتمل الحصر وجارٍ التعامل مع حالات بالتنسيق مع الجهات المختصة' : 'اكتمل الحصر دون مفقودات') : 'جارٍ الحصر'}. يرجى عدم التوجه إلى المدرسة الآن والمحافظة على مسارات مركبات الطوارئ، وسيصلكم التحديث القادم عبر القنوات الرسمية.`;
+  const impact = `ملخص أثر — نظام تطبيق حماية (دون أسماء طالبات)
+المدرسة: ${s.name || '—'} | المرحلة: ${s.stage || '—'}
+التاريخ: ${new Date(e.start).toISOString().slice(0, 10)}
+النوع: ${EVT[e.type]} | الفرضية: ${sc.t}
+الفصول: ${a.total} | المسجلات: ${a.reg} | الحاضرات اليوم: ${a.reg - a.a - a.ex}
+زمن الإخلاء: ${e.evac ? mmss(e.evac - e.start) : 'لم يُسجّل'}
+زمن اكتمال الحصر: ${a.all ? mmss(a.done - e.start) : 'لم يكتمل'}
+زمن آخر حصر ورقي: ${s.baseline ? s.baseline + ' دقيقة' : 'لم يُدخل'}
+مفقودات غير محلولة عند الإنهاء: ${a.m}
+حالات «مع مجموعة أخرى» طوبقت تلقائياً أو أُكدت: ${a.f}
+طريقة الحصر: بالرمز ${qr} فصل، يدوياً ${a.reported - qr} فصل
+فصول اختلف فيها إصدار القائمة: ${Object.values(e.reports).filter(r => r.lvOk === false).length}
+متوسط سهولة الحصر عند المعلمات: ${avg ? avg + ' من 5 (' + rates.length + ' تقييم)' : 'لا تقييمات'}`;
+  return `<h2>تقرير ${esc(EVT[e.type])}</h2>
+  <p class="lead">${esc(sc.t)} · ${esc(dayH(e.start))} · ${esc(dayG(e.start))}</p>
+  <div class="stats"><div class="stat"><b>${clock(e.start)}</b><span>الإنذار</span></div><div class="stat"><b>${e.evac ? mmss(e.evac - e.start) : '—'}</b><span>زمن الإخلاء</span></div><div class="stat"><b>${a.all ? mmss(a.done - e.start) : '—'}</b><span>زمن اكتمال الحصر</span></div><div class="stat ${a.m ? 'r' : ''}"><b>${AR(a.m)}</b><span>مفقودة عند الإنهاء</span></div></div>
+  ${s.baseline && a.all ? `<p class="note">مقارنة: آخر حصر ورقي ${AR(s.baseline)} دقيقة، والحصر بالنظام ${mmss(a.done - e.start)}.</p>` : ''}
+  <h3>نموذج (١٧) إحصاء الأعداد</h3>
+  <div class="scroll"><table><thead><tr><th>الفصل</th><th>المسجلات</th><th>الحاضرات اليوم</th><th>تم إجلاؤها</th><th>مفقودة</th><th>مصابة</th><th>زائدة</th><th>المبلّغة</th><th>وقت التأكيد</th></tr></thead><tbody>
+  ${a.rows.map(r => { const k = rowCounts(r); return `<tr><td class="l">${esc(r.c.name)}</td><td>${AR(r.reg)}</td><td>${r.rep ? AR(k.today) : '—'}</td><td>${r.rep ? AR(k.evac) : '—'}</td><td>${r.rep ? AR(r.m + r.o) : '—'}</td><td>${r.rep ? AR(r.i) : '—'}</td><td>${r.rep ? AR(r.x) : '—'}</td><td class="l">${r.rep ? esc(r.rep.by || (r.rep.via === 'qr' ? 'المعلمة' : 'مسؤولة الحصر')) : 'لم يبلّغ'}</td><td>${r.rep ? clock(r.rep.t) : '—'}</td></tr>`; }).join('')}
+  <tr><th>الإجمالي</th><th>${AR(a.reg)}</th><th>${AR(a.reg - a.a - a.ex)}</th><th>${AR(a.p + a.i + a.f)}</th><th>${AR(a.m + a.o)}</th><th>${AR(a.i)}</th><th>${AR(a.extras)}</th><th></th><th>${a.all ? clock(a.done) : ''}</th></tr></tbody></table></div>
+  ${a.missing.length ? `<div class="alarm"><h4>مفقودات عند الإنهاء</h4>${a.missing.map(m => `${esc(m.s.name)} — ${esc(m.c.name)} — ${esc(LS[m.info.l] || '')}`).join('<br>')}</div>` : ''}
+  <h3>بلاغ CHALET (نموذج ١٩)</h3><textarea id="tx-chalet" rows="9">${esc(chalet)}</textarea><div class="btns"><button type="button" class="btn sm" data-a="copyTx" data-t="tx-chalet">نسخ</button></div>
+  <h3>رسالة أولياء الأمور (نموذج ٩)</h3><textarea id="tx-parent" rows="6">${esc(parent)}</textarea><div class="btns"><button type="button" class="btn sm" data-a="copyTx" data-t="tx-parent">نسخ</button></div>
+  <h3>ملخص الأثر لإرساله للمبادرة</h3><p class="note">لا يحتوي أسماء طالبات.</p><textarea id="tx-impact" rows="12" readonly>${esc(impact)}</textarea><div class="btns"><button type="button" class="btn sm pri" data-a="copyTx" data-t="tx-impact">نسخ الملخص</button><button type="button" class="btn sm" data-a="dlImpact">تنزيل الملخص</button></div>
+  <p class="note" data-sync="${e.id}">${esc(syncLabel(e.id))}</p>
+  ${db.master && (!db.lastBackup || db.lastBackup < (e.end || 0)) ? `<div class="warn">احفظي نسخة احتياطية بعد هذا التمرين. <button type="button" class="btn sm" data-a="dlBackup">حفظ نسخة</button></div>` : ''}
+  <div class="btns noprint"><button type="button" class="btn" data-a="print">طباعة التقرير</button><button type="button" class="btn" data-a="go" data-v="history">السجل</button><button type="button" class="btn red" data-a="delEv" data-id="${e.id}">حذف هذا الحدث</button></div>`;
+}
+function vHistory() {
+  return `<h2>السجل والتقارير</h2><p class="lead">نموذج (١٢): سجل تمارين الإخلاء على هذا الجهاز.</p>
+  ${db.events.length ? `<div class="scroll"><table><thead><tr><th>التاريخ</th><th>النوع</th><th>الفرضية</th><th>الحاضرات</th><th>زمن الإخلاء</th><th>زمن الحصر</th><th>مفقودة</th><th></th></tr></thead><tbody>${[...db.events].reverse().map(e => { const a = agg(e); return `<tr><td>${esc(new Date(e.start).toLocaleDateString('ar-SA-u-ca-gregory-nu-arab'))}</td><td>${esc(EVT[e.type])}</td><td class="l">${esc(SCEN[e.scen].t)}</td><td>${AR(a.p + a.i + a.f)}</td><td>${e.evac ? mmss(e.evac - e.start) : '—'}</td><td>${a.all ? mmss(a.done - e.start) : '—'}</td><td>${AR(a.m)}</td><td><button type="button" class="btn sm" data-a="go" data-v="report" data-arg="${e.id}">${e.end ? 'التقرير' : 'جارٍ'}</button></td></tr>`; }).join('')}</tbody></table></div>` : '<p class="note">لا توجد أحداث مسجّلة بعد.</p>'}`;
+}
+function vAdmin() {
+  if (!FB) return '<h2>لوحة المبادرة</h2><p class="lead">لم يُربط النظام بـ Firebase بعد.</p>';
+  if (!adminTok) return `<h2>لوحة صاحبة المبادرة</h2><p class="lead">ملخصات التمارين من كل المدارس المشاركة، دون أسماء طالبات.</p>
+    <div class="card"><label class="f"><span>البريد</span><input type="text" id="ad-mail" autocomplete="username" inputmode="email" dir="ltr"></label><label class="f"><span>كلمة المرور</span><input type="password" id="ad-pass" autocomplete="current-password" dir="ltr" style="width:100%;min-height:46px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:16px;background:var(--bg)"></label>
+    <button type="button" class="btn pri big" data-a="adminIn">دخول</button></div>`;
+  if (!adminRows) return '<h2>لوحة صاحبة المبادرة</h2><p class="lead">جارٍ جلب الملخصات…</p>';
+  const R = adminRows, schools = new Set(R.map(r => r.sid)).size;
+  const avg = (k, f = r => r[k] > 0) => { const v = R.filter(f).map(r => r[k]); return v.length ? v.reduce((p, q) => p + q, 0) / v.length : null; };
+  const cnt = avg('countSec'), evc = avg('evacSec'), rate = avg('rateAvg');
+  const cmp = R.filter(r => r.countSec > 0 && r.baselineMin > 0);
+  const gain = cmp.length ? cmp.reduce((p, r) => p + (1 - r.countSec / (r.baselineMin * 60)), 0) / cmp.length * 100 : null;
+  return `<h2>لوحة صاحبة المبادرة</h2><p class="lead">${AR(R.length)} تمريناً من ${AR(schools)} مدرسة.</p>
+  <div class="stats"><div class="stat"><b>${cnt ? mmss(cnt * 1000) : '—'}</b><span>متوسط زمن اكتمال الحصر</span></div><div class="stat"><b>${evc ? mmss(evc * 1000) : '—'}</b><span>متوسط زمن الإخلاء</span></div><div class="stat"><b>${rate ? AR(rate.toFixed(1)) : '—'}</b><span>متوسط سهولة الحصر من ٥</span></div><div class="stat"><b>${gain != null ? AR(Math.round(gain)) + '٪' : '—'}</b><span>اختصار زمن الحصر مقارنة بالورقي${cmp.length ? ` (${AR(cmp.length)} تمريناً)` : ''}</span></div></div>
+  <div class="btns"><button type="button" class="btn pri" data-a="adminCsv">تنزيل Excel (CSV)</button><button type="button" class="btn" data-a="adminReload">تحديث</button></div>
+  <div class="scroll"><table><thead><tr><th>التاريخ</th><th>المدرسة</th><th>النوع</th><th>الفرضية</th><th>الحاضرات</th><th>الإخلاء</th><th>الحصر</th><th>الورقي</th><th>مفقودة</th><th>السهولة</th></tr></thead><tbody>
+  ${R.map(r => `<tr><td>${esc(r.date)}</td><td class="l">${esc(r.school)}</td><td>${esc(r.type)}</td><td class="l">${esc(r.scenTitle)}</td><td>${AR(r.presentToday)}</td><td>${r.evacSec > 0 ? mmss(r.evacSec * 1000) : '—'}</td><td>${r.countSec > 0 ? mmss(r.countSec * 1000) : '—'}</td><td>${r.baselineMin > 0 ? AR(r.baselineMin) + ' د' : '—'}</td><td>${AR(r.unresolved)}</td><td>${r.rateAvg > 0 ? AR(r.rateAvg) : '—'}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function vScen() { return `<h2>الفرضيات</h2><p class="lead">${AR(19)} فرضية من الدليل الإرشادي، تسلسل قابل للتكييف بقرار فريق الاستجابة.</p>${SCEN.map((s, i) => scenCard(s, i, false)).join('')}`; }
+
+/* ---------- الكاميرا والمسح ---------- */
+let camStream = null, camRAF = 0;
+const stopCam = () => { cancelAnimationFrame(camRAF); if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; } };
+const scanDlg = kind => {
+  scanState = {kind};
+  sheet(`<h3>${kind === 'res' ? 'مسح رمز المعلمة' : 'مسح رمز القوائم'}</h3>
+  <video id="cam" playsinline muted hidden></video><p id="scanMsg" class="note">جارٍ تشغيل الكاميرا…</p>
+  <div class="btns"><button type="button" class="btn pri" data-a="photo">التقاط صورة للرمز</button><button type="button" class="btn" data-a="pickImg">اختيار صورة</button><button type="button" class="btn" data-a="close">إغلاق</button></div>`);
+  startCam();
+};
+const startCam = async () => {
+  const msg = $('#scanMsg');
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false});
+    const v = $('#cam'); if (!v) return stopCam();
+    v.srcObject = camStream; v.hidden = false; await v.play();
+    msg.textContent = 'وجّهي الكاميرا نحو الرمز';
+    const cv = document.createElement('canvas'), cx = cv.getContext('2d', {willReadFrequently:true});
+    const det = 'BarcodeDetector' in window ? new BarcodeDetector({formats:['qr_code']}) : null;
+    let busy = false;
+    const loop = async () => {
+      if (!camStream || !$('#cam')) return;
+      if (!busy && v.readyState >= 2) {
+        busy = true;
+        try {
+          let txt = null;
+          if (det) { const r = await det.detect(v); if (r[0]) txt = r[0].rawValue; }
+          else { const w = Math.min(640, v.videoWidth), h = Math.round(v.videoHeight * w / v.videoWidth); cv.width = w; cv.height = h; cx.drawImage(v, 0, 0, w, h); const q = jsQR(cx.getImageData(0, 0, w, h).data, w, h, {inversionAttempts:'dontInvert'}); if (q) txt = new TextDecoder().decode(new Uint8Array(q.binaryData)); }
+          if (txt) handleScan(txt);
+        } catch (e) {}
+        busy = false;
+      }
+      camRAF = requestAnimationFrame(loop);
+    };
+    loop();
+  } catch (e) { if (msg) msg.textContent = 'الكاميرا غير متاحة هنا. التقطي صورة للرمز بالزر أدناه.'; }
+};
+const decodeImage = file => new Promise(res => {
+  const img = new Image(); img.onload = () => {
+    const scales = [1, .6, .35];
+    for (const sc of scales) {
+      const max = 1400 * sc, k = Math.min(1, max / Math.max(img.width, img.height));
+      const w = Math.round(img.width * k), h = Math.round(img.height * k), cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      const cx = cv.getContext('2d'); cx.drawImage(img, 0, 0, w, h);
+      const q = jsQR(cx.getImageData(0, 0, w, h).data, w, h, {inversionAttempts:'attemptBoth'});
+      if (q) { URL.revokeObjectURL(img.src); return res(new TextDecoder().decode(new Uint8Array(q.binaryData))); }
+    }
+    URL.revokeObjectURL(img.src); res(null);
+  };
+  img.onerror = () => res(null); img.src = URL.createObjectURL(file);
+});
+let lastScan = '';
+const handleScan = async txt => {
+  if (txt === lastScan) return; lastScan = txt; setTimeout(() => { if (lastScan === txt) lastScan = ''; }, 2500);
+  let out; try { out = await receive(txt); } catch (e) { const m = $('#scanMsg'); if (m) m.textContent = e.message; return; }
+  if (out.progress) { const m = $('#scanMsg'); if (m) m.textContent = `استُلم ${AR(out.progress[0])} من ${AR(out.progress[1])} — امسحي الرمز التالي`; return; }
+  handleObj(out.obj, true);
+};
+const handleObj = (o, fromScan) => {
+  if (o.k === 'res') { if (scanState?.kind === 'cls') { toast('هذا رمز نتيجة حصر، يُمسح من شاشة مسؤولة الحصر'); return; } applyResult(o); if (fromScan) { const m = $('#scanMsg'); if (m) m.textContent = 'تم التسجيل. امسحي رمز المعلمة التالية'; } render(); return; }
+  if (o.k === 'cls') return receivePkg(o);
+  if (o.k === 'backup') return restore(o.db);
+  toast('رمز غير معروف');
+};
+const receivePkg = o => {
+  const go2 = () => {
+    if (db.sid !== o.sid) { db.sid = o.sid; db.events = []; db.active = null; }
+    db.school.name = o.sn || db.school.name;
+    for (const c of o.cls) {
+      const cur = clsById(c.id), item = {id:c.id, name:c.name, room:c.room, lv:c.lv, st:c.st.map(([n, name, w]) => ({n, name, w:!!w}))};
+      if (!cur) db.classes.push(item); else if (c.lv >= cur.lv) Object.assign(cur, item);
+    }
+    db.master = false; save(); closeSheet(); render(); toast(`استُلمت قوائم ${o.cls.length} فصول`);
+  };
+  if (db.classes.length && db.sid !== o.sid) { closeSheet(); ask('هذا الجهاز يحمل قوائم أخرى. استبدالها بالقوائم المستلمة؟', () => { db.classes = []; go2(); }, 'استبدال'); }
+  else go2();
+};
+const restore = d => { ask('استرجاع النسخة سيستبدل كل بيانات هذا الجهاز. متابعة؟', () => { db = Object.assign(fresh(), d); save(); closeSheet(); go('home'); toast('تم الاسترجاع'); }, 'استرجاع'); };
+
+/* ---------- الأفعال ---------- */
+const A = {
+  home:() => go('home'),
+  go:b => { if (b.dataset.v === 'teacher' && db.ts) { go(db.ts.t ? 'tdone' : 'tlist'); return; } go(b.dataset.v, b.dataset.arg || null); },
+  close:() => closeSheet(),
+  closeScrim:(b, e) => { if (e.target === b) closeSheet(); },
+  confirmYes:() => { const cb = confirmCb; confirmCb = null; closeSheet(); cb && cb(); },
+  demo:() => { const run = () => { demo(); render(); toast('حُمّلت ٨ فصول ببيانات تجريبية'); }; db.classes.length ? ask('استبدال القوائم الحالية ببيانات تجريبية؟', run, 'استبدال') : run(); },
+  addCls:() => clsDlg(null),
+  editCls:b => clsDlg(clsById(b.dataset.id)),
+  saveCls:b => {
+    const name = $('#c-name').value.trim(); if (!name) return toast('اكتبي اسم الفصل');
+    let c = clsById(b.dataset.id), changed = false;
+    if (!c) { c = {id:'c' + rid(5), name, room:'', lv:1, st:[]}; db.classes.push(c); }
+    if (c.name !== name) { c.name = name; changed = true; }
+    const room = $('#c-room').value.trim(); if (c.room !== room) { c.room = room; }
+    document.querySelectorAll('[data-sn]').forEach(i => { const s = c.st.find(x => x.n === +i.dataset.sn); const v = i.value.trim(); if (s && v && v !== s.name) { s.name = v; changed = true; } });
+    document.querySelectorAll('[data-sw]').forEach(i => { const s = c.st.find(x => x.n === +i.dataset.sw); if (s && s.w !== i.checked) { s.w = i.checked; changed = true; } });
+    for (const line of $('#c-add').value.split(/\r?\n/)) { const v = line.trim(); if (v) { c.st.push({n:c.st.length + 1, name:v, w:false}); changed = true; } }
+    if (changed && b.dataset.id) c.lv++;
+    delete c.demo; db.master = true; save(); closeSheet(); render(); toast('حُفظ الفصل' + (changed && b.dataset.id ? ' — انقلي القوائم المحدّثة للمعلمات' : ''));
+  },
+  delCls:b => ask('حذف هذا الفصل وقائمته؟', () => { db.classes = db.classes.filter(c => c.id !== b.dataset.id); save(); render(); }, 'حذف'),
+  importDlg:() => sheet(`<h3>استيراد من Excel</h3><p class="note">انسخي من Excel عمودين متجاورين: الفصل ثم اسم الطالبة (والعمود الثالث اختياري: القاعة)، والصقيها هنا. يمكنك نسخها من كشوف نور بعد ترتيبها.</p><textarea id="imp" rows="10" placeholder="٢/ب	نورة محمد ..."></textarea><div class="btns"><button type="button" class="btn pri" data-a="doImport">استيراد</button><button type="button" class="btn" data-a="close">إلغاء</button></div>`),
+  doImport:() => { const r = parseImport($('#imp').value); closeSheet(); render(); toast(r.added ? `أُضيفت ${r.added} طالبة${r.made ? ` في ${r.made} فصول جديدة` : ''}` : 'لم يُعثر على صفوف صالحة: فصل ثم اسم'); },
+  showPkg:() => sheet(`<h3>أي القوائم تنقلين؟</h3><p class="note">قد تكون المعلمة مع أي فصل وقت الإنذار، لذلك الأفضل نقل كل الفصول.</p><button type="button" class="btn pri big" data-a="pkgQR" data-id="">كل الفصول</button><div class="grid">${db.classes.map(c => `<button type="button" class="cls" data-a="pkgQR" data-id="${c.id}"><b>${esc(c.name)}</b><span>فصل واحد</span></button>`).join('')}</div><button type="button" class="btn" data-a="close">إغلاق</button>`),
+  pkgQR:async b => { const p = split(await pkgText(b.dataset.id || null)); showQR(p, b.dataset.id ? 'رمز قائمة ' + clsById(b.dataset.id).name : 'رمز قوائم كل الفصول', p.length > 1 ? `القوائم في ${AR(p.length)} رموز. تمسحها المعلمة بالترتيب من شاشة «المعلمة».` : 'تمسحه المعلمة من شاشة «المعلمة».'); },
+  qrNext:() => { qrPages.i++; drawQR(); }, qrPrev:() => { qrPages.i--; drawQR(); },
+  dlPkg:async () => download('himaya-lists.json', await pkgText(), 'text/plain'),
+  copyPkg:async () => { const t = await pkgText(); sheet(`<h3>نص القوائم</h3><textarea id="cp" rows="6" readonly>${esc(t)}</textarea><div class="btns"><button type="button" class="btn pri" data-a="copyTx" data-t="cp">نسخ</button><button type="button" class="btn" data-a="close">إغلاق</button></div>`); },
+  dlBackup:async () => { db.lastBackup = now(); save(); await download('himaya-backup-' + new Date().toISOString().slice(0, 10) + '.json', await encodeZ({k:'backup', db})); render(); },
+  copyBackup:async () => { db.lastBackup = now(); save(); sheet(`<h3>النسخة الاحتياطية كنص</h3><textarea id="cp" rows="6" readonly>${esc(await encodeZ({k:'backup', db}))}</textarea><div class="btns"><button type="button" class="btn pri" data-a="copyTx" data-t="cp">نسخ</button><button type="button" class="btn" data-a="close">إغلاق</button></div>`); },
+  openJson:() => $('#fJson').click(),
+  pasteDlg:() => sheet(`<h3>لصق نص</h3><p class="note">ألصقي نص القوائم أو النسخة الاحتياطية.</p><textarea id="pst" rows="6"></textarea><div class="btns"><button type="button" class="btn pri" data-a="doPaste">متابعة</button><button type="button" class="btn" data-a="close">إلغاء</button></div>`),
+  doPaste:async () => { try { const o = await receive($('#pst').value); if (o.obj) handleObj(o.obj); else toast('النص ناقص'); } catch (e) { toast(e.message || 'النص غير صالح'); } },
+  wipe:() => ask('مسح كل بيانات هذا الجهاز نهائياً؟ احفظي نسخة أولاً.', () => { db = fresh(); save(); go('home'); }, 'مسح'),
+  tStart:b => startTeacher(b.dataset.id),
+  setLoc:b => { db.ts.loc = b.dataset.k; save(); closeSheet(); render(); },
+  relocate:() => { if (db.view === 'tlist') locDlg(); else sheet(`<h3>موقع الفصل</h3><div class="list">${Object.entries(LOC).map(([k, v]) => `<button type="button" class="btn big" data-a="oLoc" data-k="${k}">${v}</button>`).join('')}</div>`); },
+  oLoc:b => { edit.ref.loc = b.dataset.k; closeSheet(); render(); },
+  pick:b => pickDlg(+b.dataset.n),
+  setSt:b => { const ed = curEdit(), n = +b.dataset.n, k = b.dataset.k; if (k === 'p') delete ed.ref.x[n]; else ed.ref.x[n] = Object.assign({}, ed.ref.x[n] || {}, {s:k}); if (k !== 'm') { delete ed.ref.x[n]?.l; } save(); if (k === 'm') lastDlg(n); else { closeSheet(); render(); } },
+  setLast:b => { const ed = curEdit(), n = +b.dataset.n; ed.ref.x[n] = Object.assign(ed.ref.x[n] || {s:'m'}, {s:'m', l:b.dataset.k, note:($('#lastNote')?.value || '').trim()}); save(); closeSheet(); render(); },
+  extraDlg:() => extraDlg(),
+  extraCls:b => extraDlg(b.dataset.id),
+  extraAdd:b => { const ed = curEdit(), k = [b.dataset.id, +b.dataset.n]; if (!ed.ref.e.some(x => x[0] === k[0] && x[1] === k[1])) ed.ref.e.push(k); save(); closeSheet(); render(); },
+  extraFree:() => { const v = $('#exName').value.trim(); if (!v) return toast('اكتبي الاسم'); curEdit().ref.e.push([0, v]); save(); closeSheet(); render(); },
+  delExtra:b => { curEdit().ref.e.splice(+b.dataset.i, 1); save(); render(); },
+  tCancel:() => ask('إلغاء هذا الحصر؟', () => { db.ts = null; go('teacher'); }, 'إلغاء الحصر'),
+  tFinish:() => { db.ts.t = now(); if (!db.ts.loc) db.ts.loc = 'room'; save(); go('tdone'); },
+  rate:b => { db.ts.r = +b.dataset.v; save(); render(); },
+  tEdit:() => { db.ts.t = null; save(); go('tlist'); },
+  tNew:() => { db.ts = null; save(); go('teacher'); },
+  selfSubmit:() => { applyResult(JSON.parse(unb64(resultPayload().slice(4)))); },
+  nType:b => { newType = b.dataset.k; render(); },
+  startEv:() => { const e = {id:'e' + rid(6), type:newType, scen:+$('#nScen').value, start:now(), evac:null, end:null, reports:{}, found:{}}; db.events.push(e); db.active = e.id; save(); render(); },
+  evac:() => { const e = ev(); e.evac = e.evac ? null : now(); save(); render(); },
+  showScen:() => { const e = ev(); sheet(scenCard(SCEN[e.scen], e.scen, true) + '<button type="button" class="btn" data-a="close">إغلاق</button>'); },
+  scan:b => scanDlg(b.dataset.for),
+  photo:() => $('#fPhoto').click(), pickImg:() => $('#fImg').click(),
+  found:b => { const e = ev(); (e.found = e.found || {})[b.dataset.k] = 'تأكيد يدوي'; save(); render(); },
+  clsSheet:b => clsSheetDlg(b.dataset.id),
+  manualAll:b => { const e = ev(); e.reports[b.dataset.id] = {t:now(), by:'', l:'room', via:'manual', x:{}, e:[], r:null, lvOk:true}; save(); closeSheet(); render(); toast('سُجّل الفصل مكتملاً'); },
+  manualList:b => { const e = ev(), rep = e.reports[b.dataset.id]; edit = {mode:'o', ref:{cid:b.dataset.id, loc:rep?.l || 'room', x:JSON.parse(JSON.stringify(rep?.x || {})), e:JSON.parse(JSON.stringify(rep?.e || []))}}; closeSheet(); db.view = 'olist'; render(); window.scrollTo(0, 0); },
+  oSave:() => { const e = ev(), r = edit.ref, old = e.reports[r.cid]; e.reports[r.cid] = {t:old?.t || now(), by:old?.by || '', l:r.loc, via:old?.via || 'manual', x:r.x, e:r.e, r:old?.r || null, lvOk:old ? old.lvOk : true}; edit = null; save(); go('officer'); toast('حُفظ الحصر'); },
+  unreport:b => ask('إلغاء بلاغ هذا الفصل؟', () => { delete ev().reports[b.dataset.id]; save(); render(); }, 'إلغاء البلاغ'),
+  endEv:() => { const e = ev(), a = agg(e); ask(a.all ? (a.m ? 'توجد مفقودات. إنهاء الحدث وعرض التقرير؟' : 'إنهاء الحدث وعرض التقرير؟') : `لم تبلّغ ${a.total - a.reported} فصول بعد. إنهاء رغم ذلك؟`, () => { e.end = now(); db.active = null; save(); queueSummary(e); go('report', e.id); }, 'إنهاء'); },
+  copyTx:b => { const el = document.getElementById(b.dataset.t); copy(el.value, el); },
+  dlImpact:() => download('himaya-impact.txt', $('#tx-impact').value, 'text/plain'),
+  print:() => { try { window.print(); } catch (e) { toast('الطباعة غير متاحة هنا'); } },
+  adminIn:async () => { try { await adminLogin($('#ad-mail').value.trim(), $('#ad-pass').value); render(); await adminLoad(); render(); } catch (e) { adminTok = null; toast(e.message || 'تعذّر الدخول'); render(); } },
+  adminReload:async () => { try { await adminLoad(); render(); toast('حُدّثت البيانات'); } catch (e) { toast(e.message); } },
+  adminCsv:() => { const H = ['التاريخ','المدرسة','المرحلة','النوع','رقم الفرضية','الفرضية','عدد الفصول','المسجلات','الحاضرات اليوم','زمن الإخلاء (ث)','زمن الحصر (ث)','الحصر الورقي (د)','مفقودات غير محلولة','طوبقت تلقائياً','فصول بالرمز','فصول يدوياً','اختلاف إصدار القائمة','متوسط السهولة','عدد التقييمات','رمز المدرسة'];
+    const K = ['date','school','stage','type','scen','scenTitle','classes','registered','presentToday','evacSec','countSec','baselineMin','unresolved','autoMatched','qr','manual','lvMismatch','rateAvg','rateN','sid'];
+    const q = v => { const t = String(v ?? ''); return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+    download('himaya-impact-' + new Date().toISOString().slice(0, 10) + '.csv', '\ufeff' + [H.join(','), ...adminRows.map(r => K.map(k => q(r[k] === -1 ? '' : r[k])).join(','))].join('\r\n'), 'text/csv'); },
+  delEv:b => ask('حذف هذا الحدث وتقريره؟', () => { db.events = db.events.filter(e => e.id !== b.dataset.id); if (db.active === b.dataset.id) db.active = null; save(); go('history'); }, 'حذف')
+};
+document.addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (!b || b.disabled) return; const f = A[b.dataset.a]; if (f) f(b, e); });
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset.f) { const path = t.dataset.f.split('.'); if (path.length === 2) db[path[0]][path[1]] = t.value.trim(); else db[path[0]] = t.value.trim(); save(); if (t.dataset.f === 'school.name') $('#sub').textContent = t.value.trim() || 'النسخة الميدانية'; }
+  if (t.id === 's-share') { db.share = t.checked; save(); flush(); }
+  if (t.id === 'nScen') { newScen = +t.value; $('#nScenCard').innerHTML = scenCard(SCEN[newScen], newScen, true); }
+});
+document.addEventListener('input', e => { if (e.target.id === 'exQ') { const q = norm(e.target.value); document.querySelectorAll('#exList [data-q]').forEach(r => { r.hidden = q && !r.dataset.q.includes(q); }); } });
+const onImg = async e => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; const m = $('#scanMsg'); if (m) m.textContent = 'جارٍ قراءة الصورة…'; const txt = await decodeImage(f); if (txt) handleScan(txt); else if ($('#scanMsg')) $('#scanMsg').textContent = 'لم يُقرأ الرمز. قرّبي الصورة واجعلي الرمز واضحاً.'; };
+$('#fPhoto').addEventListener('change', onImg); $('#fImg').addEventListener('change', onImg);
+$('#fJson').addEventListener('change', async e => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; try { const t = await f.text(); let o; try { o = await receive(t); } catch (x) { const j = JSON.parse(t); o = {obj:j.k ? j : {k:'backup', db:j}}; } if (o.obj) handleObj(o.obj); } catch (x) { toast('الملف غير صالح'); } });
+const tick = () => document.querySelectorAll('[data-tick]').forEach(el => { el.textContent = mmss(now() - +el.dataset.tick); });
+setInterval(tick, 1000);
+if ('serviceWorker' in navigator && !inFrame && (location.protocol === 'https:' || location.hostname === 'localhost')) { navigator.serviceWorker.register('sw.js').catch(() => {}); }
+if (db.view === 'olist') db.view = 'officer';
+if (db.view === 'admin') db.view = 'home';
+try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) {}
+window.addEventListener('online', flush);
+setInterval(flush, 60000);
+render();
+flush();
+}
+</script>
+</body>
+</html>
