@@ -3,101 +3,272 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#00843d">
+<meta name="theme-color" content="#f8f9fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f141c" media="(prefers-color-scheme: dark)">
 <title>نظام تطبيق حماية</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap">
+<link rel="preload" href="fonts/tajawal-arabic-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 /* VOICE  أداة عمل تُستخدم تحت الضغط: هادئة، واضحة، كبيرة الأزرار
-   IDEA   لوحة مخرج الطوارئ: أخضر السلامة بكتابة بيضاء، والأحمر للخطر فقط
-   PICTURE في كل شاشة الشيء العامل نفسه: قائمة الفصل، شبكة الفصول، الرمز
-   COLOUR أخضر السلامة #00843d، أحمر الإنذار #d7262e، كهرماني للانتظار
-   TYPE   IBM Plex Sans Arabic مع بدائل النظام
-   LAYOUT عمود واحد للجوال، يتسع لعمودين في شاشة القائدة على الحاسب */
-:root{color-scheme:light dark;--bg:light-dark(#f4f7f5,#0c1310);--card:light-dark(#ffffff,#141f1a);--ink:light-dark(#0e1a14,#e8f1ec);--mut:light-dark(#4d5e55,#9cb1a5);--line:light-dark(#d6e0da,#273830);--g:#00843d;--gd:#006a31;--g2:light-dark(#e2f3e8,#11331f);--r:#d7262e;--r2:light-dark(#fdeaea,#3a1517);--a:light-dark(#9a6400,#f0b43c);--a2:light-dark(#fff2d3,#36290b);--n2:light-dark(#eceff1,#222b27)}
+   IDEA   لغة المواقع التعليمية الرسمية: شريط علوي داكن داخله قائمة بيضاء مستديرة، عنوان الصفحة ومسارها في الوسط، بطاقات بيضاء ناعمة، وتذييل أخضر
+   COLOUR كحلي النص #344767، أخضر متدرّج #008675←#4AA090، الأحمر للخطر فقط، الكهرماني للانتظار
+   TYPE   Tajawal بوزني 500 و700، محفوظ في مجلد fonts ليعمل دون اتصال
+   LAYOUT حاوية 1320px، عمود واحد للجوال، وشبكات بطاقات على الحاسب */
+@font-face{font-family:Tajawal;font-style:normal;font-weight:500;font-display:swap;src:url(fonts/tajawal-arabic-500-normal.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
+@font-face{font-family:Tajawal;font-style:normal;font-weight:700;font-display:swap;src:url(fonts/tajawal-arabic-700-normal.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
+@font-face{font-family:Tajawal;font-style:normal;font-weight:500;font-display:swap;src:url(fonts/tajawal-latin-500-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Tajawal;font-style:normal;font-weight:700;font-display:swap;src:url(fonts/tajawal-latin-700-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+:root{color-scheme:light dark;
+  --bg:light-dark(#f8f9fa,#0f141c);--card:light-dark(#ffffff,#18202c);--ink:light-dark(#344767,#e6ebf3);--mut:light-dark(#53565a,#a7b1c0);
+  --line:light-dark(#e3e7ec,#2b3544);--inb:light-dark(#d2d6da,#3a4556);--hov:light-dark(#f3f5f8,#202a38);
+  --g:#008675;--g1:#4aa090;--gt:light-dark(#007a6a,#5cc2ae);--g2:light-dark(#e6f4f1,#12302a);
+  --grad:linear-gradient(310deg,#008675,#4aa090);--hero:linear-gradient(310deg,#335f63,#2e6277);
+  --b2:linear-gradient(310deg,light-dark(#ced4da,#2b3544),light-dark(#ebeff4,#36425a));--b2t:light-dark(#3a416f,#e6ebf3);
+  --r:#d7262e;--r2:light-dark(#fdeaea,#3a1517);--a:light-dark(#9a6400,#f0b43c);--a2:light-dark(#fff4da,#36290b);--n2:light-dark(#eceff3,#232c38);
+  --hrc:light-dark(rgba(52,71,103,.5),rgba(230,235,243,.28));--rowc:light-dark(rgba(52,71,103,.16),rgba(230,235,243,.12));
+  --shadow:0 20px 27px 0 rgba(0,0,0,.05);--bsh:0 4px 7px -1px rgba(0,0,0,.11),0 2px 4px -1px rgba(0,0,0,.07)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
 html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:16px/1.55 "IBM Plex Sans Arabic",Tahoma,"Segoe UI","Noto Sans Arabic","Geeza Pro",sans-serif;overflow-x:clip;padding-bottom:96px}
+body{background:var(--bg);color:var(--ink);font:500 16px/1.6 Tajawal,Tahoma,"Segoe UI","Noto Sans Arabic","Geeza Pro",sans-serif;overflow-x:clip}
 button,input,select,textarea{font:inherit;color:inherit}
-.top{background:var(--g);color:#fff;padding:12px max(16px,4vw);display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:20}
-.top h1{font-size:18px;margin:0;font-weight:700;flex:1;line-height:1.3}
-.top small{display:block;font-weight:400;opacity:.85;font-size:13px}
-.top button{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:10px;min-height:40px;padding:0 12px;cursor:pointer}
-.wrap{max-width:980px;margin:0 auto;padding:16px max(16px,4vw)}
-h2{font-size:clamp(24px,5vw,32px);line-height:1.15;margin:8px 0 6px;letter-spacing:-.01em}
-h3{font-size:18px;margin:22px 0 8px}
+b,strong,th{font-weight:700}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.hero :focus-visible,.foot :focus-visible{outline-color:#fff}
+.hero .pill :focus-visible{outline-color:var(--ink)}
+svg.i{width:1em;height:1em;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- الشريط العلوي: القائمة والعنوان والمسار ---------- */
+.hero{margin:16px;border-radius:12px;background:var(--hero);color:#fff;padding:24px 24px 16px;text-align:center}
+.pill{position:relative;max-width:1224px;margin:0 auto;background:var(--card);color:var(--ink);border-radius:160px;box-shadow:0 4px 6px -1px rgba(20,20,20,.12),0 2px 4px -1px rgba(20,20,20,.07);display:flex;align-items:center;gap:8px;min-height:54px;padding:2px 20px;text-align:start}
+.brand{display:flex;align-items:center;gap:10px;background:none;border:0;padding:6px 4px;margin:0;cursor:pointer;color:inherit;text-align:start;border-radius:10px;flex:none}
+.brand svg{width:36px;height:36px;flex:none}
+.brand b{display:block;font-size:16px;line-height:1.25;color:var(--gt)}
+.brand small{display:block;font-size:11px;line-height:1.3;color:var(--mut);max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.navlist{list-style:none;margin:0;padding:0}
+.navlist button{background:none;border:0;cursor:pointer;color:var(--ink);font-size:14px;line-height:22px;padding:8px;border-radius:8px;white-space:nowrap}
+.navlist button:hover{color:var(--gt)}
+.navlist button[aria-current=page]{color:var(--gt);font-weight:700}
+.menuBtn{margin-inline-start:auto;width:44px;height:44px;border:0;background:none;color:var(--ink);border-radius:50%;cursor:pointer;display:grid;place-items:center;font-size:24px;padding:0}
+.menuBtn .x,.pill.open .menuBtn .m{display:none}.pill.open .menuBtn .x{display:block}
+@media(max-width:959.98px){
+  .navlist{display:none;position:absolute;top:calc(100% + 8px);inset-inline-end:16px;width:min(246px,calc(100% - 32px));background:var(--card);border-radius:8px;padding:16px 8px;box-shadow:0 8px 26px -4px rgba(20,20,20,.15),0 8px 9px -5px rgba(20,20,20,.06);z-index:30}
+  .pill.open .navlist{display:block}
+  .navlist button{display:block;width:100%;text-align:start;padding:8px 16px;line-height:23px}
+}
+@media(min-width:960px){
+  .menuBtn{display:none}
+  .pill{padding:2px 40px}
+  .navlist{display:flex;align-items:center;gap:0 6px;margin-inline-start:28px}
+}
+@media(min-width:1200px){.navlist{gap:0 16px;margin-inline-start:88px}}
+.htext{padding:48px 8px 24px}.htext>*{max-width:1224px;margin-inline:auto}
+.hero h1{font-size:24px;line-height:1.375;font-weight:700;margin:0;color:#fff}
+.hero .lead{font-size:16px;line-height:1.6;margin:8px auto 0;max-width:960px;color:#fff}
+.hero .lead .btn{min-height:34px;padding:0 12px;margin:2px 4px;background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.5);box-shadow:none;font-size:14px}
+.crumbs{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;font-size:12px;line-height:1.4}
+.crumbs li{display:flex;align-items:center}
+.crumbs li+li::before{content:"/";margin:0 8px;font-size:14px}
+.crumbs button,.crumbs [aria-current]{opacity:.85}
+.crumbs button{background:none;border:0;padding:4px 2px;margin:0;color:#fff;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-size:inherit;border-radius:4px}
+.crumbs button:hover{opacity:1;text-decoration:underline}
+.htext>.herocap{font-size:12px;line-height:1.25;margin:16px 0 0;max-width:none;text-align:start;padding-inline-start:32px;color:#fff}
+@media(max-width:599.98px){.htext{padding:32px 0 16px}.htext>.herocap{padding-inline-start:0;text-align:center}}
+
+/* ---------- المحتوى ---------- */
+.wrap{max-width:1320px;margin:0 auto;padding:40px 24px 48px}
+@media(max-width:599.98px){.wrap{padding:24px 16px 40px}}
+h3{font-size:clamp(22px,.75vw + 19px,30px);line-height:1.15;font-weight:500;margin:40px 0 20px;color:var(--ink)}
+.card>h3:first-child,.two>div>h3:first-child{margin-top:0}
+.card>:last-child,.two>div>:last-child{margin-bottom:0}.card>.fields:last-child{margin-bottom:-16px}
 p.lead{color:var(--mut);margin:0 0 16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:10px;margin:14px 0}
-.tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:start;cursor:pointer;min-height:96px;display:flex;flex-direction:column;gap:4px}
-.tile b{font-size:19px}.tile span{color:var(--mut);font-size:14px}
-.tile.main{background:var(--g);color:#fff;border-color:var(--g)}.tile.main span{color:#e3f6ea}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-weight:600;text-decoration:none}
-.btn.pri{background:var(--g);border-color:var(--g);color:#fff}
-.btn.red{background:var(--r);border-color:var(--r);color:#fff}
-.btn.big{min-height:62px;font-size:19px;width:100%}
-.btn.sm{min-height:38px;padding:0 12px;font-size:14px}
-.btn:focus-visible,.tile:focus-visible,.row:focus-visible{outline:3px solid var(--a);outline-offset:2px}
-.btns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
-label.f{display:block;margin:10px 0}label.f span{display:block;font-size:14px;color:var(--mut);margin-bottom:4px}
-input[type=text],input[type=number],select,textarea{width:100%;font-size:16px;min-height:46px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
-textarea{min-height:120px;line-height:1.6}
-.note{font-size:14px;color:var(--mut)}
-.warn{background:var(--a2);border:1px solid var(--a);border-radius:12px;padding:10px 12px;margin:10px 0;font-size:15px}
-.alarm{background:var(--r2);border:2px solid var(--r);border-radius:14px;padding:12px 14px;margin:10px 0}
-.alarm h4{margin:0 0 6px;color:var(--r);font-size:18px}
-.okbox{background:var(--g2);border:1px solid var(--g);border-radius:14px;padding:12px 14px;margin:10px 0}
-.list{display:flex;flex-direction:column;gap:6px;margin:10px 0}
-.row{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;min-height:54px;cursor:pointer;text-align:start;width:100%}
+.note{font-size:14px;color:var(--mut);margin:8px 0}
+.card{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:40px;margin:0 0 24px}
+.card .card{background:var(--bg);box-shadow:none;border-radius:12px;padding:20px 24px;margin:16px 0 0}
+@media(max-width:599.98px){.card{padding:24px 20px;margin-bottom:16px}.card .card{padding:16px}}
+.cards{display:grid;gap:24px;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));align-items:start;margin:0 0 24px}
+.cards>.card{margin:0}.cards>.full{grid-column:1/-1}
+@media(max-width:599.98px){.cards{gap:16px}}
+.fields{display:grid;gap:0 24px;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.div{height:1px;border:0;background:linear-gradient(to left,transparent,var(--hrc),transparent);margin:16px 0 24px}
+.two{display:grid;gap:16px 24px;align-items:start;margin-bottom:24px}@media(min-width:860px){.two{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}}
+
+/* الأزرار */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:0 24px;border-radius:8px;border:0;background:var(--b2);color:var(--b2t);cursor:pointer;font-weight:700;font-size:15px;line-height:1.3;text-decoration:none;box-shadow:var(--bsh)}
+.btn.pri{background:var(--grad);color:#fff}
+.btn.red{background:linear-gradient(310deg,#bf1d25,#e04a50);color:#fff}
+.btn.big{min-height:60px;font-size:19px;width:100%}
+.btn.sm{min-height:38px;padding:0 14px;font-size:14px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{flex:1 1 auto;min-height:46px;border-radius:8px;border:0;background:var(--b2);color:var(--b2t);cursor:pointer;padding:0 14px;font-weight:700;box-shadow:var(--bsh)}
+.seg button[aria-pressed=true]{background:var(--grad);color:#fff}
+
+/* الحقول */
+label.f,.f{display:block;margin:0 0 16px}
+label.f span,.f .lbl{display:block;font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px}
+input[type=text],input[type=number],input[type=password],select,textarea{width:100%;font-size:16px;min-height:48px;padding:10px 14px;border:1px solid var(--inb);border-radius:8px;background:var(--card);color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--g1);box-shadow:0 0 0 3px rgba(0,134,117,.28)}
+input[type=checkbox]{accent-color:var(--g)}
+textarea{min-height:120px;line-height:1.7}
+
+/* التنبيهات */
+.warn{background:var(--a2);border-inline-start:4px solid var(--a);border-radius:12px;padding:14px 18px;margin:0 0 16px;font-size:15px}
+.alarm{background:var(--r2);border:2px solid var(--r);border-radius:16px;padding:16px 20px;margin:0 0 16px;color:var(--ink)}
+.alarm h4{margin:0 0 6px;color:var(--r);font-size:19px;font-weight:700}
+.okbox{background:var(--card);border-inline-start:4px solid var(--g);border-radius:16px;box-shadow:var(--shadow);padding:20px 24px;margin:0 0 16px}
+.alarm .list,.warn .list{gap:8px}
+.alarm .row,.warn .row{border-radius:10px;background-image:none;background-color:var(--card)}
+
+/* الصفحة الرئيسية */
+.tiles{display:grid;gap:16px;grid-template-columns:repeat(3,minmax(0,1fr));margin:0 0 24px}
+.tiles.pri{grid-template-columns:repeat(2,minmax(0,1fr))}
+.tile{background:var(--card);border:0;border-radius:16px;box-shadow:var(--shadow);padding:40px 24px;cursor:pointer;color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center}
+.tile .ic{width:40px;height:40px;color:var(--gt)}
+.tile .tt{display:flex;flex-direction:column;gap:4px}
+.tile b{font-size:20px;line-height:1.3}
+.tile .d{font-size:16px;line-height:1.5;color:var(--mut)}
+.tile.main{background:var(--grad);color:#fff}
+.tile.main .ic{color:#fff;width:48px;height:48px}
+.tile.main b{font-size:24px}
+.tile.main .d{color:rgba(255,255,255,.92)}
+@media(max-width:599.98px){
+  .tiles{grid-template-columns:1fr;gap:12px;margin-bottom:16px}
+  .tiles.pri{grid-template-columns:1fr 1fr}
+  .tile{padding:24px 12px}
+  .tile.main b{font-size:20px}.tile.main .d{font-size:14px}
+  .tiles:not(.pri) .tile{flex-direction:row;justify-content:flex-start;text-align:start;padding:16px 20px;gap:16px}
+  .tiles:not(.pri) .tile .ic{width:32px;height:32px}
+  .tiles:not(.pri) .tile b{font-size:18px}.tiles:not(.pri) .tile .d{font-size:14px}
+}
+
+/* القوائم */
+.list{display:flex;flex-direction:column;margin:12px 0}
+.list>.btn+.btn{margin-top:8px}
+.row{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:10px 12px;margin:0;border:0;border-inline-start:4px solid transparent;border-radius:0;background:linear-gradient(to left,transparent,var(--rowc),transparent) bottom/100% 1px no-repeat;color:inherit;cursor:pointer;text-align:start}
+.row:last-child{background-image:none}
+button.row:hover{background-color:var(--hov)}
 .row .n{width:2.2em;color:var(--mut);font-variant-numeric:tabular-nums;flex:none}
 .row .nm{flex:1;font-size:17px}
+.row>input{flex:1}.row>label{flex:none;display:flex;align-items:center;gap:6px}
 .row .sub{display:block;font-size:13px;color:var(--mut)}
-.chip{display:inline-block;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600;white-space:nowrap;flex:none}
-.c-p{background:var(--g2);color:var(--g)}.c-i{background:var(--a2);color:var(--a)}.c-a,.c-e{background:var(--n2);color:var(--mut)}.c-o{background:var(--a2);color:var(--a)}.c-m{background:var(--r);color:#fff}.c-f{background:var(--g2);color:var(--g)}
-.row.st-m{border-color:var(--r);background:var(--r2)}.row.st-o,.row.st-i{border-color:var(--a)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,140px),1fr));gap:8px;margin:10px 0}
-.cls{border-radius:14px;padding:12px;min-height:88px;border:2px solid var(--line);background:var(--card);cursor:pointer;text-align:start;display:flex;flex-direction:column;gap:2px}
+.row.st-m{background-color:var(--r2);border-inline-start-color:var(--r)}.row.st-o,.row.st-i{border-inline-start-color:var(--a)}
+#app>.list:not(:empty){background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:8px 16px;margin:0 0 24px}
+@media(min-width:900px){#app>.list:not(:empty){display:block;columns:2;column-gap:48px;padding:16px 40px}#app>.list>.row{break-inside:avoid}}
+.clist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:0 32px}
+.chip{display:inline-block;border-radius:999px;padding:4px 12px;font-size:13px;font-weight:700;line-height:1.4;white-space:nowrap;flex:none}
+.c-p,.c-f{background:var(--g2);color:var(--gt)}.c-i,.c-o{background:var(--a2);color:var(--a)}.c-a,.c-e{background:var(--n2);color:var(--mut)}.c-m{background:var(--r);color:#fff}
+
+/* شبكة الفصول والأرقام */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:12px;margin:12px 0 24px}
+.cls{border-radius:12px;padding:14px 16px;min-height:88px;border:2px solid transparent;background:var(--card);box-shadow:0 6px 16px rgba(0,0,0,.06);cursor:pointer;text-align:start;display:flex;flex-direction:column;gap:2px;color:inherit}
+.card .cls,.sheet .cls{box-shadow:none;border-color:var(--line)}
 .cls b{font-size:20px}.cls span{font-size:13px;color:var(--mut)}
-.cls.ok{border-color:var(--g);background:var(--g2)}.cls.bad{border-color:var(--r);background:var(--r2)}.cls.wait{border-color:var(--a);background:var(--a2)}
-.timer{font-size:clamp(40px,11vw,64px);font-weight:700;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.02em}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,120px),1fr));gap:8px;margin:12px 0}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
-.stat b{display:block;font-size:26px;line-height:1.1;font-variant-numeric:tabular-nums}.stat span{font-size:13px;color:var(--mut)}
-.stat.r{border-color:var(--r)}.stat.r b{color:var(--r)}.stat.a b{color:var(--a)}
-.seg{display:flex;flex-wrap:wrap;gap:6px}.seg button{flex:1 1 auto;min-height:46px;border-radius:10px;border:1px solid var(--line);background:var(--card);cursor:pointer;padding:0 12px}
-.seg button[aria-pressed=true]{background:var(--g);color:#fff;border-color:var(--g);font-weight:700}
-.bar{position:fixed;inset-inline:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px max(16px,4vw) calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center;z-index:15}
-.bar .cnt{flex:1;font-size:15px;line-height:1.3}.bar .cnt b{font-size:24px;display:block}
-.qr{background:#fff;padding:10px;border-radius:14px;max-width:340px;margin:10px auto;border:1px solid var(--line)}
-.qr svg{display:block;width:100%;height:auto}
-.scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:40;display:flex;align-items:flex-end;justify-content:center}
-.sheet{background:var(--card);width:min(640px,100%);max-height:88vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px max(16px,4vw) calc(18px + env(safe-area-inset-bottom,0px))}
-.sheet h3{margin-top:0}
-@media(min-width:700px){.scrim{align-items:center}.sheet{border-radius:18px}}
+.cls.ok{border-color:var(--g1);background:var(--g2)}.cls.bad{border-color:var(--r);background:var(--r2)}.cls.wait{border-color:var(--a);background:var(--a2)}
+.timer{font-size:clamp(52px,8vw,72px);font-weight:700;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.02em;margin:4px 0 8px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr));gap:16px;margin:0 0 24px}
+.stat{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:16px 20px}
+.stat b{display:block;font-size:28px;line-height:1.2;font-variant-numeric:tabular-nums}.stat span{font-size:14px;color:var(--mut)}
+.stat.r b{color:var(--r)}.stat.a b{color:var(--a)}
+@media(max-width:599.98px){.stats{gap:12px;margin-bottom:16px}.stat{padding:14px 16px}}
+
+/* الجداول */
 .scroll{overflow-x:auto}
+#app>.scroll{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:8px 24px;margin:0 0 24px}
 table{border-collapse:collapse;width:100%;font-size:14px}
-th,td{border:1px solid var(--line);padding:6px 8px;text-align:center;white-space:nowrap}
-th{background:var(--g2)}td.l{text-align:start;white-space:normal;min-width:8em}
-.toast{position:fixed;inset-inline:16px;bottom:96px;margin:auto;max-width:520px;background:#0e1a14;color:#fff;border-radius:12px;padding:12px 16px;z-index:60;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+th,td{padding:12px 10px;text-align:center;white-space:nowrap;border-bottom:1px solid var(--line)}
+thead th{font-size:13px;color:var(--mut);border-bottom-width:2px}
+tbody tr:last-child>*{border-bottom:0}
+tbody th{background:var(--bg)}
+td.l{text-align:start;white-space:normal;min-width:8em}
+
+/* الرمز والفرضيات */
+.qr{background:#fff;padding:12px;border-radius:16px;max-width:340px;margin:12px auto;border:1px solid var(--line)}
+.qr svg{display:block;width:100%;height:auto}
+.center{text-align:center}
+.scen{border-inline-start:5px solid var(--line);padding:16px 24px;margin:0 0 16px}
+.k-out{border-inline-start-color:var(--g)}.k-in{border-inline-start-color:var(--a)}.k-lock{border-inline-start-color:var(--r)}.k-none{border-inline-start-color:var(--mut)}.k-mix{border-inline-start-color:var(--g1)}
+.scen ol{margin:8px 0 0;padding-inline-start:26px;list-style:arabic-indic}
+.scen li{margin:4px 0}
+details summary{cursor:pointer;font-weight:700;font-size:17px;min-height:44px;display:flex;align-items:center;gap:12px;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"";margin-inline-start:auto;flex:none;width:9px;height:9px;border:solid var(--mut);border-width:0 2px 2px 0;transform:translateY(-2px) rotate(45deg)}
+details[open] summary::after{transform:translateY(2px) rotate(-135deg)}
+.scenlist{display:grid;gap:0 24px;align-items:start}@media(min-width:960px){.scenlist{grid-template-columns:1fr 1fr}}
+
+/* الشريط السفلي والنوافذ */
+.bar{position:fixed;inset-inline:0;bottom:0;background:var(--card);box-shadow:0 -8px 24px rgba(20,23,39,.09);padding:12px max(16px,calc((100% - 1272px)/2)) calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:12px;align-items:center;z-index:15}
+.bar .cnt{flex:1;font-size:14px;line-height:1.3;color:var(--mut)}.bar .cnt b{font-size:24px;display:block;color:var(--ink)}
+.scrim{position:fixed;inset:0;background:rgba(20,23,39,.5);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);color:var(--ink);width:min(640px,100%);max-height:88vh;overflow:auto;border-radius:16px 16px 0 0;padding:24px max(16px,4vw) calc(20px + env(safe-area-inset-bottom,0px));box-shadow:0 8px 26px -4px rgba(20,20,20,.2)}
+.sheet:focus{outline:0}
+.sheet h3{margin:0 0 12px;font-size:20px;font-weight:700;line-height:1.35}
+@media(min-width:700px){.scrim{align-items:center}.sheet{border-radius:16px;padding:32px}}
+.toast{position:fixed;inset-inline:16px;bottom:96px;margin:auto;max-width:520px;background:#1d2a3f;color:#fff;border-radius:12px;padding:12px 16px;z-index:60;text-align:center;box-shadow:0 8px 26px -4px rgba(20,20,20,.3)}
 video{width:100%;border-radius:12px;background:#000;max-height:50vh}
-details summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;align-items:center}
-.scen{border-inline-start:6px solid var(--line)}.k-out{border-inline-start-color:var(--g)}.k-in{border-inline-start-color:var(--a)}.k-lock{border-inline-start-color:var(--r)}.k-none{border-inline-start-color:var(--mut)}
-.scen ol{margin:6px 0;padding-inline-start:26px;list-style:arabic-indic}
-.two{display:grid;gap:12px}@media(min-width:860px){.two{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}}
-@media print{.top,.bar,.btns,.noprint{display:none!important}body{background:#fff;color:#000;padding:0}.card{border:0}}
-@media(prefers-reduced-motion:no-preference){.toast{animation:up .2s ease-out}@keyframes up{from{transform:translateY(12px);opacity:0}}}
+
+/* التذييل */
+.foot{background:var(--grad);color:#fff;padding:48px 0 24px}
+.hasbar .foot{padding-bottom:104px}
+.foot .in{max-width:1320px;margin:0 auto;padding:0 24px}
+.fcols{display:flex;flex-wrap:wrap;justify-content:center;gap:24px 0;text-align:center}
+.fcol{width:216px;padding:0 12px}
+.fcol h2{font-size:14px;font-weight:700;line-height:1.5;margin:0 0 8px}
+.fcol ul{list-style:none;margin:0;padding:0}
+.fcol button{background:none;border:0;color:#fff;font-size:14px;line-height:21px;padding:2px 4px 4px;cursor:pointer;border-radius:4px}
+.fcol button:hover{text-decoration:underline}
+.fbrand{width:324px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.fbrand svg{width:64px;height:64px}
+.fbrand b{font-size:20px;line-height:1.3}.fbrand span{font-size:13px;opacity:.9}
+.foot .div{background:linear-gradient(to left,transparent,rgba(255,255,255,.5),transparent);margin:32px 0 16px}
+.fcopy{margin:0;text-align:center;font-size:14px;line-height:1.6}
+@media(max-width:599.98px){.fcols{flex-direction:column;align-items:center}.fbrand{order:3;width:auto;margin-top:16px}}
+
+@media print{.pill,.crumbs,.herocap,.foot,.bar,.btns,.noprint{display:none!important}body{background:#fff;color:#000}.hero{background:none;color:#000;margin:0;padding:0;text-align:start}.hero h1,.hero .lead{color:#000}.htext{padding:0 0 12px}.wrap{padding:0;max-width:none}.card,#app>.scroll,.stat,.okbox{box-shadow:none;border:1px solid #bbb;padding:12px}th,td{border:1px solid #999}}
+@media(prefers-reduced-motion:no-preference){.toast{animation:up .2s ease-out}@keyframes up{from{transform:translateY(12px);opacity:0}}.btn,.tile,.cls{transition:transform .15s,box-shadow .15s}.btn:not([disabled]):hover,.tile:hover{transform:translateY(-1px)}}
 </style>
 </head>
 <body>
-<header class="top">
-  <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect x="1" y="1" width="32" height="32" rx="6" fill="#fff"/><rect x="5" y="6" width="11" height="22" rx="1.5" fill="#00843d"/><path d="M20 17h9m-4-4 4 4-4 4" stroke="#00843d" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  <h1 id="ttl">نظام تطبيق حماية<small id="sub">النسخة الميدانية</small></h1>
-  <button type="button" data-a="home" id="homeBtn">الرئيسية</button>
+<header class="hero">
+  <nav class="pill" id="pill" aria-label="القائمة الرئيسية">
+    <button type="button" class="brand" data-a="home" id="homeBtn" title="الرئيسية">
+      <svg viewBox="0 0 34 34" aria-hidden="true"><rect x="1" y="1" width="32" height="32" rx="7" fill="#008675"/><rect x="5" y="6" width="11" height="22" rx="1.5" fill="#fff"/><path d="M20 17h9m-4-4 4 4-4 4" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span><b>نظام تطبيق حماية</b><small id="sub">النسخة الميدانية</small></span>
+    </button>
+    <ul class="navlist" id="navList">
+      <li><button type="button" data-a="nav" data-to="home">الرئيسية</button></li>
+      <li><button type="button" data-a="nav" data-to="officer">مسؤولة الحصر</button></li>
+      <li><button type="button" data-a="nav" data-to="teacher">المعلمة</button></li>
+      <li><button type="button" data-a="nav" data-to="scen">الفرضيات</button></li>
+      <li><button type="button" data-a="nav" data-to="setup">الإعداد والقوائم</button></li>
+      <li><button type="button" data-a="nav" data-to="history">السجل والتقارير</button></li>
+    </ul>
+    <button type="button" class="menuBtn" data-a="menu" aria-expanded="false" aria-controls="navList" aria-label="القائمة">
+      <svg class="i m" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="i x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </nav>
+  <div class="htext">
+    <h1 id="pTitle">نظام تطبيق حماية</h1>
+    <p class="lead" id="pLead" hidden></p>
+    <nav aria-label="مسار الصفحة" id="crumbNav" hidden><ol class="crumbs" id="crumbs"></ol></nav>
+    <p class="herocap" id="pCap" hidden></p>
+  </div>
 </header>
 <main class="wrap" id="app"></main>
+<footer class="foot">
+  <div class="in">
+    <div class="fcols">
+      <div class="fcol"><h2>الحصر</h2><ul><li><button type="button" data-a="nav" data-to="officer">مسؤولة الحصر</button></li><li><button type="button" data-a="nav" data-to="teacher">المعلمة</button></li></ul></div>
+      <div class="fcol"><h2>المرجع والإعداد</h2><ul><li><button type="button" data-a="nav" data-to="scen">الفرضيات</button></li><li><button type="button" data-a="nav" data-to="history">السجل والتقارير</button></li><li><button type="button" data-a="nav" data-to="setup">الإعداد والقوائم</button></li></ul></div>
+      <div class="fbrand"><svg viewBox="0 0 34 34" aria-hidden="true"><rect x="1" y="1" width="32" height="32" rx="7" fill="#fff"/><rect x="5" y="6" width="11" height="22" rx="1.5" fill="#008675"/><path d="M20 17h9m-4-4 4 4-4 4" stroke="#008675" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><b>نظام تطبيق حماية</b><span>النسخة الميدانية</span></div>
+    </div>
+    <hr class="div">
+    <p class="fcopy">مبني على «الدليل الإرشادي لخطط الإخلاء والتمارين الفرضية في المقار التعليمية» (سبتمبر ٢٠٢٦)</p>
+  </div>
+</footer>
 <div id="bar"></div>
 <div id="layer"></div>
 <input type="file" id="fPhoto" accept="image/*" capture="environment" hidden>
@@ -171,8 +342,9 @@ const ev = () => db.events.find(e => e.id === db.active) || null;
 let edit = null, scanState = null, partBuf = {}, qrPages = null, toastT = 0;
 const go = (view, arg = null) => { db.view = view; db.viewArg = arg; save(); render(); window.scrollTo(0, 0); };
 const toast = msg => { clearTimeout(toastT); const l = document.createElement('div'); l.className = 'toast'; l.setAttribute('role', 'status'); l.textContent = msg; document.querySelectorAll('.toast').forEach(x => x.remove()); document.body.appendChild(l); toastT = setTimeout(() => l.remove(), 3200); };
-const sheet = html => { clearTimeout(toastT); document.querySelectorAll('.toast').forEach(x => x.remove()); $('#layer').innerHTML = `<div class="scrim" data-a="closeScrim"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`; };
-const closeSheet = () => { stopCam(); $('#layer').innerHTML = ''; };
+let sheetFrom = null;
+const sheet = html => { if (!$('#layer').contains(document.activeElement)) sheetFrom = document.activeElement; clearTimeout(toastT); document.querySelectorAll('.toast').forEach(x => x.remove()); $('#layer').innerHTML = `<div class="scrim" data-a="closeScrim"><div class="sheet" role="dialog" aria-modal="true" tabindex="-1">${html}</div></div>`; const sh = $('#layer .sheet'), t = sh.querySelector('h3'); if (t) { t.id = 'sheetT'; sh.setAttribute('aria-labelledby', 'sheetT'); } sh.focus({preventScroll:true}); };
+const closeSheet = () => { stopCam(); const had = !!$('#layer').firstElementChild; $('#layer').innerHTML = ''; if (had && sheetFrom && sheetFrom.isConnected) sheetFrom.focus({preventScroll:true}); sheetFrom = null; };
 let confirmCb = null;
 const ask = (msg, cb, yes = 'نعم') => { confirmCb = cb; sheet(`<h3>${esc(msg)}</h3><div class="btns"><button type="button" class="btn red" data-a="confirmYes">${esc(yes)}</button><button type="button" class="btn" data-a="close">إلغاء</button></div>`); };
 const copy = async (text, el) => { try { await navigator.clipboard.writeText(text); toast('نُسخ النص'); } catch (e) { if (el) { el.select(); } toast('حدّدي النص وانسخيه يدوياً'); } };
@@ -294,13 +466,40 @@ const demo = () => {
 };
 
 /* ---------- العرض ---------- */
+/* القائمة العلوية والمسار: كل شاشة تبدأ بعنوان h2 ووصف p.lead، فيُنقلان إلى الشريط العلوي */
+const NAV = {home:'الرئيسية', officer:'مسؤولة الحصر', teacher:'المعلمة', scen:'الفرضيات', setup:'الإعداد والقوائم', history:'السجل والتقارير'};
+const SEC = {olist:'officer', tlist:'teacher', tdone:'teacher', admin:'setup', report:'history'};
+const HOME_IC = '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 12 4l9 7"/><path d="M5.5 9.5V20h5v-5.5h3V20h5V9.5"/></svg>';
+const setMenu = open => { const p = $('#pill'); p.classList.toggle('open', open); $('.menuBtn').setAttribute('aria-expanded', String(open)); if (open && getComputedStyle($('.menuBtn')).display !== 'none') $('#navList button').focus(); };
+function hoist() {
+  const app = $('#app'), h = app.firstElementChild;
+  let title = 'نظام تطبيق حماية', titleTxt = '', lead = '';
+  if (h && h.tagName === 'H2') {
+    title = h.innerHTML; titleTxt = h.textContent.trim();
+    const n = h.nextElementSibling; h.remove();
+    if (n && n.matches('p.lead')) { lead = n.innerHTML; n.remove(); }
+  }
+  $('#pTitle').innerHTML = title;
+  $('#pLead').innerHTML = lead; $('#pLead').hidden = !lead;
+  const cap = app.querySelector(':scope > .herocap'), capTxt = cap ? cap.textContent.trim() : '';
+  if (cap) cap.remove();
+  $('#pCap').textContent = capTxt; $('#pCap').hidden = !capTxt;
+  const sec = SEC[db.view] || (NAV[db.view] ? db.view : 'home');
+  document.querySelectorAll('#navList [data-to]').forEach(b => { if (b.dataset.to === sec) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+  const cr = [`<li><button type="button" data-a="nav" data-to="home">${HOME_IC}الرئيسية</button></li>`];
+  if (SEC[db.view]) cr.push(`<li><button type="button" data-a="nav" data-to="${sec}">${NAV[sec]}</button></li>`, `<li aria-current="page">${esc(titleTxt)}</li>`);
+  else cr.push(`<li aria-current="page">${NAV[sec]}</li>`);
+  $('#crumbs').innerHTML = cr.join('');
+  $('#crumbNav').hidden = sec === 'home';
+}
 function render() {
   const s = db.school.name;
   $('#sub').textContent = s ? s : 'النسخة الميدانية';
-  $('#homeBtn').style.visibility = db.view === 'home' ? 'hidden' : 'visible';
   $('#bar').innerHTML = '';
   const v = {home:vHome, setup:vSetup, teacher:vTeacher, officer:vOfficer, scen:vScen, report:vReport, history:vHistory, olist:vList, tlist:vList, tdone:vTDone, admin:vAdmin}[db.view] || vHome;
   $('#app').innerHTML = v();
+  hoist();
+  document.body.classList.toggle('hasbar', !!$('#bar').firstElementChild);
   tick();
 }
 
@@ -313,47 +512,62 @@ function vHome() {
   ${e ? `<button type="button" class="alarm" style="width:100%;text-align:start;cursor:pointer" data-a="go" data-v="officer"><h4>${esc(EVT[e.type])} جارٍ منذ <span data-tick="${e.start}">${mmss(now() - e.start)}</span></h4>افتحي شاشة الحصر</button>` : ''}
   ${db.classes.length && db.master && (!db.lastBackup || now() - db.lastBackup > 14 * 864e5) ? `<div class="warn">${db.lastBackup ? 'مضى أكثر من أسبوعين على آخر نسخة احتياطية.' : 'لم تُحفظ نسخة احتياطية بعد.'} <button type="button" class="btn sm" data-a="dlBackup">حفظ نسخة الآن</button></div>` : ''}
   ${!db.classes.length ? `<div class="okbox"><b>ابدئي من الإعداد</b><br>أدخلي قوائم الفصول، أو جرّبي النظام ببيانات تجريبية.<div class="btns"><button type="button" class="btn pri" data-a="demo">تحميل بيانات تجريبية</button><button type="button" class="btn" data-a="go" data-v="setup">الإعداد والقوائم</button></div></div>` : ''}
-  <div class="tiles">
-    <button type="button" class="tile main" data-a="go" data-v="officer"><b>مسؤولة الحصر</b><span>بدء الحدث، مسح الرموز، المفقودات</span></button>
-    <button type="button" class="tile main" data-a="go" data-v="teacher"><b>المعلمة</b><span>حصر الفصل الذي معك الآن</span></button>
-    <button type="button" class="tile" data-a="go" data-v="scen"><b>الفرضيات</b><span>${AR(19)} فرضية وخطوات الاستجابة</span></button>
-    <button type="button" class="tile" data-a="go" data-v="setup"><b>الإعداد والقوائم</b><span>المدرسة، الفصول، النقل، النسخ الاحتياطي</span></button>
-    <button type="button" class="tile" data-a="go" data-v="history"><b>السجل والتقارير</b><span>${AR(db.events.length)} حدث مسجّل</span></button>
+  <div class="tiles pri">
+    ${tile('officer', 'مسؤولة الحصر', 'بدء الحدث، مسح الرموز، المفقودات', true)}
+    ${tile('teacher', 'المعلمة', 'حصر الفصل الذي معك الآن', true)}
   </div>
-  <p class="note">${db.classes.length ? `${AR(db.classes.length)} فصول و${AR(db.classes.reduce((a, c) => a + activeSt(c).length, 0))} طالبة على هذا الجهاز.` : ''}${db.classes.some(c => c.demo) ? ' البيانات الحالية تجريبية.' : ''}</p>`;
+  <hr class="div">
+  <div class="tiles">
+    ${tile('scen', 'الفرضيات', `${AR(19)} فرضية وخطوات الاستجابة`)}
+    ${tile('setup', 'الإعداد والقوائم', 'المدرسة، الفصول، النقل، النسخ الاحتياطي')}
+    ${tile('history', 'السجل والتقارير', `${AR(db.events.length)} حدث مسجّل`)}
+  </div>
+  <p class="note herocap">${db.classes.length ? `${AR(db.classes.length)} فصول و${AR(db.classes.reduce((a, c) => a + activeSt(c).length, 0))} طالبة على هذا الجهاز.` : ''}${db.classes.some(c => c.demo) ? ' البيانات الحالية تجريبية.' : ''}</p>`;
 }
+const IC = {
+  officer:'<path d="M9 4.5H7a2 2 0 0 0-2 2V19a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6.5a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="3.5" rx="1"/><path d="m9 13.5 2 2 4-4.5"/>',
+  teacher:'<circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/>',
+  scen:'<path d="M10.3 4.2 2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z"/><path d="M12 9.5v4M12 17h.01"/>',
+  setup:'<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>',
+  history:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>'
+};
+const tile = (v, t, d, main = false) => `<button type="button" class="tile${main ? ' main' : ''}" data-a="go" data-v="${v}"><svg class="i ic" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width:1.7">${IC[v]}</svg><span class="tt"><b>${t}</b><span class="d">${d}</span></span></button>`;
 
 /* ----- الإعداد ----- */
 function vSetup() {
   const sc = db.school;
   return `<h2>الإعداد والقوائم</h2>
   <p class="lead">تُدخل مرة واحدة على جهاز القائدة، ثم تُنقل لجوالات المعلمات.</p>
-  <div class="card"><h3 style="margin-top:0">بيانات المدرسة</h3>
+  <div class="cards">
+  <section class="card full"><h3>بيانات المدرسة</h3>
+    <div class="fields">
     <label class="f"><span>اسم المدرسة</span><input type="text" id="s-name" data-f="school.name" value="${esc(sc.name)}"></label>
     <label class="f"><span>المرحلة</span><select id="s-stage" data-f="school.stage">${['','ابتدائية','متوسطة','ثانوية','متوسطة وثانوية','رياض أطفال','أخرى'].map(o => `<option ${o === sc.stage ? 'selected' : ''}>${o}</option>`).join('')}</select></label>
     <label class="f"><span>الموقع (الحي والشارع)</span><input type="text" id="s-addr" data-f="school.address" value="${esc(sc.address)}"></label>
     <label class="f"><span>مدخل فرق الطوارئ</span><input type="text" id="s-ent" data-f="school.entrance" value="${esc(sc.entrance)}" placeholder="مثل: البوابة الشرقية"></label>
     <label class="f"><span>زمن آخر حصر ورقي بالدقائق (للمقارنة)</span><input type="number" id="s-base" inputmode="decimal" data-f="school.baseline" value="${esc(sc.baseline)}"></label>
-  </div>
-  <div class="card"><h3 style="margin-top:0">الفصول (${AR(db.classes.length)})</h3>
-    <div class="list">${db.classes.map(c => `<button type="button" class="row" data-a="editCls" data-id="${c.id}"><span class="nm">${esc(c.name)}<span class="sub">${esc(c.room || 'بلا قاعة')} · إصدار القائمة ${AR(c.lv)}</span></span><span class="chip c-p">${AR(activeSt(c).length)} طالبة</span></button>`).join('') || '<p class="note">لا توجد فصول بعد.</p>'}</div>
+    </div>
+  </section>
+  <section class="card full"><h3>الفصول (${AR(db.classes.length)})</h3>
+    <div class="list clist">${db.classes.map(c => `<button type="button" class="row" data-a="editCls" data-id="${c.id}"><span class="nm">${esc(c.name)}<span class="sub">${esc(c.room || 'بلا قاعة')} · إصدار القائمة ${AR(c.lv)}</span></span><span class="chip c-p">${AR(activeSt(c).length)} طالبة</span></button>`).join('') || '<p class="note">لا توجد فصول بعد.</p>'}</div>
     <div class="btns"><button type="button" class="btn pri" data-a="importDlg">استيراد من Excel</button><button type="button" class="btn" data-a="addCls">إضافة فصل</button><button type="button" class="btn" data-a="demo">بيانات تجريبية</button></div>
     <p class="note">الطالبة الجديدة تُضاف في آخر القائمة، والمنسحبة تُعلَّم ولا تُحذف، حتى لا تتغير أرقام البقية.</p>
-  </div>
-  <div class="card"><h3 style="margin-top:0">نقل القوائم إلى جوالات المعلمات</h3>
+  </section>
+  <section class="card"><h3>نقل القوائم إلى جوالات المعلمات</h3>
     <p class="note">تستقبلها المعلمة من شاشة «المعلمة». الأفضل النقل بالرمز أو بالمشاركة القريبة بين الجوالين، وتجنّب مجموعات المراسلة.</p>
     <div class="btns"><button type="button" class="btn pri" data-a="showPkg" ${db.classes.length ? '' : 'disabled'}>عرض رمز القوائم</button><button type="button" class="btn" data-a="dlPkg" ${db.classes.length ? '' : 'disabled'}>تنزيل ملف القوائم</button><button type="button" class="btn" data-a="copyPkg" ${db.classes.length ? '' : 'disabled'}>نسخ القوائم كنص</button></div>
-  </div>
-  ${FB ? `<div class="card"><h3 style="margin-top:0">مشاركة ملخصات الأثر</h3>
-    <label class="note" style="display:flex;gap:8px;align-items:flex-start;font-size:15px;color:var(--ink)"><input type="checkbox" id="s-share" ${db.share ? 'checked' : ''} style="width:22px;height:22px;flex:none"> إرسال ملخص كل تمرين إلى صاحبة المبادرة لقياس الأثر</label>
-    <p class="note">يُرسل: اسم المدرسة ومرحلتها، ونوع التمرين والفرضية، والأزمنة، وأعداد الطالبات والفصول، ومتوسط تقييم السهولة. لا يُرسل أي اسم طالبة أو معلمة. ${(db.outbox || []).length ? `بانتظار الإرسال: ${AR(db.outbox.length)}.` : ''}</p></div>` : ''}
-  <div class="card"><h3 style="margin-top:0">النسخة الاحتياطية</h3>
+  </section>
+  <section class="card"><h3>النسخة الاحتياطية</h3>
     ${db.lastBackup ? `<p class="note">آخر نسخة: ${esc(dayG(db.lastBackup))}</p>` : ''}
     <p class="note">احفظي نسخة بعد كل تعديل، وانقليها لجهاز نائبتك.</p>
     <div class="btns"><button type="button" class="btn" data-a="dlBackup">حفظ نسخة</button><button type="button" class="btn" data-a="copyBackup">نسخ النسخة كنص</button><button type="button" class="btn" data-a="openJson">استرجاع من ملف</button><button type="button" class="btn" data-a="pasteDlg">استرجاع من نص</button></div>
-  </div>
-  ${FB ? `<div class="btns"><button type="button" class="btn sm" data-a="go" data-v="admin">دخول صاحبة المبادرة</button></div>` : ''}
-  <div class="card"><h3 style="margin-top:0">مسح البيانات</h3><div class="btns"><button type="button" class="btn red" data-a="wipe">مسح كل بيانات هذا الجهاز</button></div></div>`;
+  </section>
+  ${FB ? `<section class="card"><h3>مشاركة ملخصات الأثر</h3>
+    <label style="display:flex;gap:10px;align-items:flex-start;font-size:15px;cursor:pointer"><input type="checkbox" id="s-share" ${db.share ? 'checked' : ''} style="width:22px;height:22px;flex:none;margin:2px 0 0"> إرسال ملخص كل تمرين إلى صاحبة المبادرة لقياس الأثر</label>
+    <p class="note">يُرسل: اسم المدرسة ومرحلتها، ونوع التمرين والفرضية، والأزمنة، وأعداد الطالبات والفصول، ومتوسط تقييم السهولة. لا يُرسل أي اسم طالبة أو معلمة. ${(db.outbox || []).length ? `بانتظار الإرسال: ${AR(db.outbox.length)}.` : ''}</p>
+    <div class="btns"><button type="button" class="btn sm" data-a="go" data-v="admin">دخول صاحبة المبادرة</button></div></section>` : ''}
+  <section class="card"><h3>مسح البيانات</h3><div class="btns"><button type="button" class="btn red" data-a="wipe">مسح كل بيانات هذا الجهاز</button></div></section>
+  </div>`;
 }
 
 const clsDlg = c => sheet(`<h3>${c ? 'تعديل فصل' : 'إضافة فصل'}</h3>
@@ -400,7 +614,7 @@ function vTeacher() {
   <p class="lead">اضغطي على الفصل لبدء الحصر في نقطة التجمع.</p>
   <div class="warn">في ${esc(sc)}: لا تفتحي الجوال إلا بعد الخروج من المبنى.</div>
   ${db.classes.length ? `<div class="grid">${db.classes.map(c => `<button type="button" class="cls" data-a="tStart" data-id="${c.id}"><b>${esc(c.name)}</b><span>${AR(activeSt(c).length)} طالبة</span></button>`).join('')}</div>` : `<div class="okbox"><b>لا توجد قوائم على هذا الجهاز</b><br>استلميها من مسؤولة الحصر أو القائدة.</div>`}
-  <div class="card"><h3 style="margin-top:0">استلام القوائم</h3>
+  <div class="card"><h3>استلام القوائم</h3>
     <div class="btns"><button type="button" class="btn pri" data-a="scan" data-for="cls">مسح رمز القوائم</button><button type="button" class="btn" data-a="openJson">فتح ملف القوائم</button><button type="button" class="btn" data-a="pasteDlg">لصق نص القوائم</button></div>
     <label class="f"><span>اسمك (يظهر في التقرير)</span><input type="text" id="t-name" data-f="teacher" value="${esc(db.teacher)}"></label>
   </div>`;
@@ -463,10 +677,10 @@ function vTDone() {
   const e = ev();
   return `<h2>انتهى حصر ${esc(c.name)}</h2>
   ${miss.length ? `<div class="alarm"><h4>بلّغي القائدة فوراً بالصوت أو اللاسلكي</h4>${miss.map(s => `<b>${esc(s.name)}</b> (${esc(c.name)}) — آخر موقع: ${esc(LS[r.x[s.n].l] || 'لا أعرف')}${r.x[s.n].note ? ' · ' + esc(r.x[s.n].note) : ''}`).join('<br>')}</div>` : `<div class="okbox"><b>لا مفقودات في هذا الفصل.</b></div>`}
-  <p style="text-align:center;margin:6px 0 0">اعرضي هذا الرمز على مسؤولة الحصر</p>
-  <div class="qr">${qrSvg(resultPayload())}</div>
-  <div class="card"><b>ما مدى سهولة الحصر؟</b><div class="seg" style="margin-top:8px">${[1, 2, 3, 4, 5].map(v => `<button type="button" aria-pressed="${r.r === v}" data-a="rate" data-v="${v}">${AR(v)}</button>`).join('')}</div><p class="note">١ صعب جداً · ٥ سهل جداً. يُرسل التقييم مع الرمز.</p></div>
-  <div class="btns">${e ? `<button type="button" class="btn" data-a="selfSubmit">تسجيل في هذا الجهاز (للتجربة)</button>` : ''}<button type="button" class="btn" data-a="tEdit">تعديل الحصر</button><button type="button" class="btn pri" data-a="tNew">حصر جديد</button></div>`;
+  <div class="two"><div class="card center"><p style="margin:0">اعرضي هذا الرمز على مسؤولة الحصر</p>
+  <div class="qr">${qrSvg(resultPayload())}</div></div>
+  <div><div class="card"><h3>ما مدى سهولة الحصر؟</h3><div class="seg">${[1, 2, 3, 4, 5].map(v => `<button type="button" aria-pressed="${r.r === v}" data-a="rate" data-v="${v}">${AR(v)}</button>`).join('')}</div><p class="note">١ صعب جداً · ٥ سهل جداً. يُرسل التقييم مع الرمز.</p></div>
+  <div class="btns">${e ? `<button type="button" class="btn" data-a="selfSubmit">تسجيل في هذا الجهاز (للتجربة)</button>` : ''}<button type="button" class="btn" data-a="tEdit">تعديل الحصر</button><button type="button" class="btn pri" data-a="tNew">حصر جديد</button></div></div></div>`;
 }
 
 /* ----- مسؤولة الحصر ----- */
@@ -475,25 +689,25 @@ function vOfficer() {
   const e = ev();
   if (!db.classes.length) return `<h2>مسؤولة الحصر</h2><div class="okbox">لا توجد قوائم فصول على هذا الجهاز. <div class="btns"><button type="button" class="btn pri" data-a="go" data-v="setup">الإعداد والقوائم</button><button type="button" class="btn" data-a="demo">بيانات تجريبية</button></div></div>`;
   if (!e) return `<h2>بدء حدث جديد</h2><p class="lead">يُسجَّل وقت الإنذار لحظة الضغط على زر البدء.</p>
-    <div class="card"><b>النوع</b><div class="seg" style="margin-top:8px">${Object.entries(EVT).map(([k, v]) => `<button type="button" aria-pressed="${newType === k}" data-a="nType" data-k="${k}">${v}</button>`).join('')}</div>
-    <label class="f"><span>الفرضية</span><select id="nScen">${SCEN.map((s, i) => `<option value="${i}" ${i === newScen ? 'selected' : ''}>${AR(i + 1)}. ${esc(s.t)}</option>`).join('')}</select></label>
+    <div class="card"><div class="fields"><div class="f" role="group" aria-labelledby="nTypeL"><span class="lbl" id="nTypeL">النوع</span><div class="seg">${Object.entries(EVT).map(([k, v]) => `<button type="button" aria-pressed="${newType === k}" data-a="nType" data-k="${k}">${v}</button>`).join('')}</div></div>
+    <label class="f"><span>الفرضية</span><select id="nScen">${SCEN.map((s, i) => `<option value="${i}" ${i === newScen ? 'selected' : ''}>${AR(i + 1)}. ${esc(s.t)}</option>`).join('')}</select></label></div>
     <div id="nScenCard">${scenCard(SCEN[newScen], newScen, true)}</div></div>
     <button type="button" class="btn red big" data-a="startEv">بدء — تسجيل وقت الإنذار الآن</button>
     <div class="btns"><button type="button" class="btn" data-a="go" data-v="history">السجل والتقارير</button></div>`;
   const a = agg(e), sc = SCEN[e.scen];
   $('#bar').innerHTML = `<div class="bar"><button type="button" class="btn pri" style="flex:1;min-height:58px;font-size:18px" data-a="scan" data-for="res">مسح رمز معلمة</button><button type="button" class="btn" style="min-height:58px" data-a="endEv">إنهاء</button></div>`;
-  return `<div class="two"><div>
-    <p class="note" style="margin:4px 0">${esc(EVT[e.type])} · ${esc(sc.t)} · بدأ ${clock(e.start)}</p>
-    <div class="timer" data-tick="${e.start}" aria-live="off">${mmss(now() - e.start)}</div>
-    <div class="btns"><button type="button" class="btn sm" data-a="showScen">خطوات الفرضية</button>${e.evac ? `<span class="chip c-p">اكتمل الإخلاء ${mmss(e.evac - e.start)}</span><button type="button" class="btn sm" data-a="evac">تعديل</button>` : `<button type="button" class="btn sm pri" data-a="evac">اكتمل الإخلاء (خرجت آخر مجموعة)</button>`}</div>
+  return `<h2>${esc(EVT[e.type])} جارٍ</h2><p class="lead">${esc(sc.t)} · بدأ ${clock(e.start)}</p>
+  <div class="two"><div>
+    <div class="card"><div class="timer" data-tick="${e.start}" aria-live="off">${mmss(now() - e.start)}</div>
+    <div class="btns" style="margin-bottom:0;align-items:center"><button type="button" class="btn sm" data-a="showScen">خطوات الفرضية</button>${e.evac ? `<span class="chip c-p">اكتمل الإخلاء ${mmss(e.evac - e.start)}</span><button type="button" class="btn sm" data-a="evac">تعديل</button>` : `<button type="button" class="btn sm pri" data-a="evac">اكتمل الإخلاء (خرجت آخر مجموعة)</button>`}</div></div>
     ${a.all ? (a.m ? `<div class="alarm"><h4>اكتمل الحصر في ${mmss(a.done - e.start)} — توجد مفقودات</h4>بلّغي الدفاع المدني فوراً بالأسماء وآخر موقع.</div>` : `<div class="okbox"><b>اكتمل الحصر في ${mmss(a.done - e.start)} دون مفقودات.</b>${a.o ? ` بقيت ${AR(a.o)} «مع مجموعة أخرى» تحتاج تأكيداً.` : ''}</div>`) : ''}
     <div class="stats"><div class="stat"><b>${AR(a.reported)}/${AR(a.total)}</b><span>فصول بلّغت</span></div><div class="stat r"><b>${AR(a.m)}</b><span>مفقودة</span></div><div class="stat a"><b>${AR(a.o)}</b><span>بانتظار التأكيد</span></div><div class="stat"><b>${AR(a.p + a.i + a.f)}</b><span>في نقطة التجمع</span></div></div>
     ${a.missing.length ? `<div class="alarm"><h4>المفقودات (${AR(a.missing.length)})</h4><div class="list">${a.missing.map(m => `<div class="row" style="cursor:default;background:var(--card)"><span class="nm"><b>${esc(m.s.name)}</b><span class="sub">${esc(m.c.name)} · آخر موقع: ${esc(LS[m.info.l] || 'لا أعرف')}${m.info.note ? ' · ' + esc(m.info.note) : ''} · بُلّغ ${clock(m.t)}</span></span><button type="button" class="btn sm" data-a="found" data-k="${m.c.id}:${m.s.n}">وُجدت</button></div>`).join('')}</div></div>` : ''}
     ${a.pending.length ? `<div class="warn"><b>مع مجموعة أخرى ولم تُطابق بعد (${AR(a.pending.length)})</b><div class="list">${a.pending.map(m => `<div class="row" style="cursor:default"><span class="nm">${esc(m.s.name)}<span class="sub">${esc(m.c.name)}</span></span><button type="button" class="btn sm" data-a="found" data-k="${m.c.id}:${m.s.n}">تأكدت من وجودها</button></div>`).join('')}</div></div>` : ''}
     ${a.unmatched.length ? `<div class="card"><b>زائدات غير مسجّلات في القوائم</b><br>${a.unmatched.map(u => `${esc(u.name)} (مع ${esc(u.by)})`).join('، ')}</div>` : ''}
-  </div><div>
+  </div><div class="card">
     <h3>الفصول</h3><p class="note">اضغطي على الفصل للإدخال اليدوي إن لم يكن مع المعلمة جوال.</p>
-    <div class="grid">${a.rows.map(r => { const st = !r.rep ? '' : r.m ? 'bad' : r.o ? 'wait' : 'ok'; return `<button type="button" class="cls ${st}" data-a="clsSheet" data-id="${r.c.id}"><b>${esc(r.c.name)}</b><span>${!r.rep ? 'لم يبلّغ' : r.m ? `مفقودة ${AR(r.m)}` : r.o ? `بانتظار ${AR(r.o)}` : 'مكتمل'}</span>${r.rep ? `<span>${clock(r.rep.t)} · ${r.rep.via === 'qr' ? 'رمز' : 'يدوي'}${r.rep.lvOk === false ? ' · إصدار مختلف' : ''}</span>` : ''}</button>`; }).join('')}</div>
+    <div class="grid" style="margin-bottom:0">${a.rows.map(r => { const st = !r.rep ? '' : r.m ? 'bad' : r.o ? 'wait' : 'ok'; return `<button type="button" class="cls ${st}" data-a="clsSheet" data-id="${r.c.id}"><b>${esc(r.c.name)}</b><span>${!r.rep ? 'لم يبلّغ' : r.m ? `مفقودة ${AR(r.m)}` : r.o ? `بانتظار ${AR(r.o)}` : 'مكتمل'}</span>${r.rep ? `<span>${clock(r.rep.t)} · ${r.rep.via === 'qr' ? 'رمز' : 'يدوي'}${r.rep.lvOk === false ? ' · إصدار مختلف' : ''}</span>` : ''}</button>`; }).join('')}</div>
   </div></div>`;
 }
 const scenCard = (s, i, open) => `<div class="card scen k-${s.k}"><details ${open ? 'open' : ''}><summary>${AR(i + 1)}. ${esc(s.t)}</summary><p style="margin:4px 0"><span class="chip ${s.k === 'out' ? 'c-p' : s.k === 'lock' ? 'c-m' : s.k === 'none' ? 'c-a' : 'c-o'}">${KIND[s.k]}</span> ${esc(s.r)}</p><ol>${s.s.map(x => `<li>${esc(x)}</li>`).join('')}</ol></details></div>`;
@@ -556,15 +770,17 @@ T — نوع الحادث: ${sc.t}.`;
   <p class="lead">${esc(sc.t)} · ${esc(dayH(e.start))} · ${esc(dayG(e.start))}</p>
   <div class="stats"><div class="stat"><b>${clock(e.start)}</b><span>الإنذار</span></div><div class="stat"><b>${e.evac ? mmss(e.evac - e.start) : '—'}</b><span>زمن الإخلاء</span></div><div class="stat"><b>${a.all ? mmss(a.done - e.start) : '—'}</b><span>زمن اكتمال الحصر</span></div><div class="stat ${a.m ? 'r' : ''}"><b>${AR(a.m)}</b><span>مفقودة عند الإنهاء</span></div></div>
   ${s.baseline && a.all ? `<p class="note">مقارنة: آخر حصر ورقي ${AR(s.baseline)} دقيقة، والحصر بالنظام ${mmss(a.done - e.start)}.</p>` : ''}
-  <h3>نموذج (١٧) إحصاء الأعداد</h3>
+  <section class="card"><h3>نموذج (١٧) إحصاء الأعداد</h3>
   <div class="scroll"><table><thead><tr><th>الفصل</th><th>المسجلات</th><th>الحاضرات اليوم</th><th>تم إجلاؤها</th><th>مفقودة</th><th>مصابة</th><th>زائدة</th><th>المبلّغة</th><th>وقت التأكيد</th></tr></thead><tbody>
   ${a.rows.map(r => { const k = rowCounts(r); return `<tr><td class="l">${esc(r.c.name)}</td><td>${AR(r.reg)}</td><td>${r.rep ? AR(k.today) : '—'}</td><td>${r.rep ? AR(k.evac) : '—'}</td><td>${r.rep ? AR(r.m + r.o) : '—'}</td><td>${r.rep ? AR(r.i) : '—'}</td><td>${r.rep ? AR(r.x) : '—'}</td><td class="l">${r.rep ? esc(r.rep.by || (r.rep.via === 'qr' ? 'المعلمة' : 'مسؤولة الحصر')) : 'لم يبلّغ'}</td><td>${r.rep ? clock(r.rep.t) : '—'}</td></tr>`; }).join('')}
-  <tr><th>الإجمالي</th><th>${AR(a.reg)}</th><th>${AR(a.reg - a.a - a.ex)}</th><th>${AR(a.p + a.i + a.f)}</th><th>${AR(a.m + a.o)}</th><th>${AR(a.i)}</th><th>${AR(a.extras)}</th><th></th><th>${a.all ? clock(a.done) : ''}</th></tr></tbody></table></div>
+  <tr><th>الإجمالي</th><th>${AR(a.reg)}</th><th>${AR(a.reg - a.a - a.ex)}</th><th>${AR(a.p + a.i + a.f)}</th><th>${AR(a.m + a.o)}</th><th>${AR(a.i)}</th><th>${AR(a.extras)}</th><th></th><th>${a.all ? clock(a.done) : ''}</th></tr></tbody></table></div></section>
   ${a.missing.length ? `<div class="alarm"><h4>مفقودات عند الإنهاء</h4>${a.missing.map(m => `${esc(m.s.name)} — ${esc(m.c.name)} — ${esc(LS[m.info.l] || '')}`).join('<br>')}</div>` : ''}
-  <h3>بلاغ CHALET (نموذج ١٩)</h3><textarea id="tx-chalet" rows="9">${esc(chalet)}</textarea><div class="btns"><button type="button" class="btn sm" data-a="copyTx" data-t="tx-chalet">نسخ</button></div>
-  <h3>رسالة أولياء الأمور (نموذج ٩)</h3><textarea id="tx-parent" rows="6">${esc(parent)}</textarea><div class="btns"><button type="button" class="btn sm" data-a="copyTx" data-t="tx-parent">نسخ</button></div>
-  <h3>ملخص الأثر لإرساله للمبادرة</h3><p class="note">لا يحتوي أسماء طالبات.</p><textarea id="tx-impact" rows="12" readonly>${esc(impact)}</textarea><div class="btns"><button type="button" class="btn sm pri" data-a="copyTx" data-t="tx-impact">نسخ الملخص</button><button type="button" class="btn sm" data-a="dlImpact">تنزيل الملخص</button></div>
-  <p class="note" data-sync="${e.id}">${esc(syncLabel(e.id))}</p>
+  <div class="cards">
+  <section class="card"><h3>بلاغ CHALET (نموذج ١٩)</h3><textarea id="tx-chalet" rows="9">${esc(chalet)}</textarea><div class="btns" style="margin-bottom:0"><button type="button" class="btn sm" data-a="copyTx" data-t="tx-chalet">نسخ</button></div></section>
+  <section class="card"><h3>رسالة أولياء الأمور (نموذج ٩)</h3><textarea id="tx-parent" rows="9">${esc(parent)}</textarea><div class="btns" style="margin-bottom:0"><button type="button" class="btn sm" data-a="copyTx" data-t="tx-parent">نسخ</button></div></section>
+  <section class="card full"><h3>ملخص الأثر لإرساله للمبادرة</h3><p class="note">لا يحتوي أسماء طالبات.</p><textarea id="tx-impact" rows="12" readonly>${esc(impact)}</textarea><div class="btns"><button type="button" class="btn sm pri" data-a="copyTx" data-t="tx-impact">نسخ الملخص</button><button type="button" class="btn sm" data-a="dlImpact">تنزيل الملخص</button></div>
+  <p class="note" data-sync="${e.id}" style="margin-bottom:0">${esc(syncLabel(e.id))}</p></section>
+  </div>
   ${db.master && (!db.lastBackup || db.lastBackup < (e.end || 0)) ? `<div class="warn">احفظي نسخة احتياطية بعد هذا التمرين. <button type="button" class="btn sm" data-a="dlBackup">حفظ نسخة</button></div>` : ''}
   <div class="btns noprint"><button type="button" class="btn" data-a="print">طباعة التقرير</button><button type="button" class="btn" data-a="go" data-v="history">السجل</button><button type="button" class="btn red" data-a="delEv" data-id="${e.id}">حذف هذا الحدث</button></div>`;
 }
@@ -575,7 +791,7 @@ function vHistory() {
 function vAdmin() {
   if (!FB) return '<h2>لوحة المبادرة</h2><p class="lead">لم يُربط النظام بـ Firebase بعد.</p>';
   if (!adminTok) return `<h2>لوحة صاحبة المبادرة</h2><p class="lead">ملخصات التمارين من كل المدارس المشاركة، دون أسماء طالبات.</p>
-    <div class="card"><label class="f"><span>البريد</span><input type="text" id="ad-mail" autocomplete="username" inputmode="email" dir="ltr"></label><label class="f"><span>كلمة المرور</span><input type="password" id="ad-pass" autocomplete="current-password" dir="ltr" style="width:100%;min-height:46px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:16px;background:var(--bg)"></label>
+    <div class="card"><label class="f"><span>البريد</span><input type="text" id="ad-mail" autocomplete="username" inputmode="email" dir="ltr"></label><label class="f"><span>كلمة المرور</span><input type="password" id="ad-pass" autocomplete="current-password" dir="ltr"></label>
     <button type="button" class="btn pri big" data-a="adminIn">دخول</button></div>`;
   if (!adminRows) return '<h2>لوحة صاحبة المبادرة</h2><p class="lead">جارٍ جلب الملخصات…</p>';
   const R = adminRows, schools = new Set(R.map(r => r.sid)).size;
@@ -589,7 +805,7 @@ function vAdmin() {
   <div class="scroll"><table><thead><tr><th>التاريخ</th><th>المدرسة</th><th>النوع</th><th>الفرضية</th><th>الحاضرات</th><th>الإخلاء</th><th>الحصر</th><th>الورقي</th><th>مفقودة</th><th>السهولة</th></tr></thead><tbody>
   ${R.map(r => `<tr><td>${esc(r.date)}</td><td class="l">${esc(r.school)}</td><td>${esc(r.type)}</td><td class="l">${esc(r.scenTitle)}</td><td>${AR(r.presentToday)}</td><td>${r.evacSec > 0 ? mmss(r.evacSec * 1000) : '—'}</td><td>${r.countSec > 0 ? mmss(r.countSec * 1000) : '—'}</td><td>${r.baselineMin > 0 ? AR(r.baselineMin) + ' د' : '—'}</td><td>${AR(r.unresolved)}</td><td>${r.rateAvg > 0 ? AR(r.rateAvg) : '—'}</td></tr>`).join('')}</tbody></table></div>`;
 }
-function vScen() { return `<h2>الفرضيات</h2><p class="lead">${AR(19)} فرضية من الدليل الإرشادي، تسلسل قابل للتكييف بقرار فريق الاستجابة.</p>${SCEN.map((s, i) => scenCard(s, i, false)).join('')}`; }
+function vScen() { return `<h2>الفرضيات</h2><p class="lead">${AR(19)} فرضية من الدليل الإرشادي، تسلسل قابل للتكييف بقرار فريق الاستجابة.</p><div class="scenlist">${SCEN.map((s, i) => scenCard(s, i, false)).join('')}</div>`; }
 
 /* ---------- الكاميرا والمسح ---------- */
 let camStream = null, camRAF = 0;
@@ -672,7 +888,9 @@ const restore = d => { ask('استرجاع النسخة سيستبدل كل بي
 
 /* ---------- الأفعال ---------- */
 const A = {
-  home:() => go('home'),
+  home:() => { setMenu(false); go('home'); },
+  nav:b => { setMenu(false); const to = b.dataset.to; if (to === 'teacher' && db.ts) { go(db.ts.t ? 'tdone' : 'tlist'); return; } go(to); },
+  menu:() => setMenu(!$('#pill').classList.contains('open')),
   go:b => { if (b.dataset.v === 'teacher' && db.ts) { go(db.ts.t ? 'tdone' : 'tlist'); return; } go(b.dataset.v, b.dataset.arg || null); },
   close:() => closeSheet(),
   closeScrim:(b, e) => { if (e.target === b) closeSheet(); },
@@ -748,7 +966,13 @@ const A = {
     download('himaya-impact-' + new Date().toISOString().slice(0, 10) + '.csv', '\ufeff' + [H.join(','), ...adminRows.map(r => K.map(k => q(r[k] === -1 ? '' : r[k])).join(','))].join('\r\n'), 'text/csv'); },
   delEv:b => ask('حذف هذا الحدث وتقريره؟', () => { db.events = db.events.filter(e => e.id !== b.dataset.id); if (db.active === b.dataset.id) db.active = null; save(); go('history'); }, 'حذف')
 };
-document.addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (!b || b.disabled) return; const f = A[b.dataset.a]; if (f) f(b, e); });
+document.addEventListener('click', e => { if ($('#pill').classList.contains('open') && !e.target.closest('#pill')) setMenu(false); const b = e.target.closest('[data-a]'); if (!b || b.disabled) return; const f = A[b.dataset.a]; if (f) f(b, e); });
+document.addEventListener('focusin', e => { if ($('#pill').classList.contains('open') && !e.target.closest('#pill')) setMenu(false); });
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if ($('#pill').classList.contains('open')) { setMenu(false); $('.menuBtn').focus(); }
+  else if ($('#layer').firstElementChild) closeSheet();
+});
 document.addEventListener('change', e => {
   const t = e.target;
   if (t.dataset.f) { const path = t.dataset.f.split('.'); if (path.length === 2) db[path[0]][path[1]] = t.value.trim(); else db[path[0]] = t.value.trim(); save(); if (t.dataset.f === 'school.name') $('#sub').textContent = t.value.trim() || 'النسخة الميدانية'; }

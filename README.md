@@ -6,7 +6,7 @@
 ## النشر على GitHub Pages (مرة واحدة)
 
 1. ادخلي github.com واضغطي **New repository**، وسمّيه مثلاً `himaya`، واختاري **Public** ثم **Create repository**.
-2. اضغطي **uploading an existing file**، واسحبي كل محتويات هذا المجلد (ومعها مجلد `vendor`)، ثم **Commit changes**.
+2. اضغطي **uploading an existing file**، واسحبي كل محتويات هذا المجلد (ومعها مجلدا `vendor` و`fonts`)، ثم **Commit changes**.
 3. من **Settings** ثم **Pages**: اختاري **Deploy from a branch**، والفرع `main` والمجلد `/ (root)`، ثم **Save**.
 4. بعد دقيقة يظهر الرابط بالشكل: `https://اسم-حسابك.github.io/himaya/`
 
@@ -17,13 +17,14 @@
 
 ## التحديث
 
-- ارفعي ملف `index.html` الجديد فوق القديم.
+- ارفعي ملف `index.html` الجديد فوق القديم (ومجلد `fonts` إن لم يكن مرفوعاً من قبل).
 - غيّري رقم `CACHE` في `sw.js` (مثلاً من `himaya-v1` إلى `himaya-v2`) حتى تصل النسخة الجديدة للجوالات.
 
 ## المكتبات
 
 - `vendor/qrcode.min.js`: qrcode-generator 1.4.4 (رخصة MIT).
 - `vendor/jsqr.min.js`: jsQR 1.4.0 (رخصة Apache-2.0).
+- `fonts/`: خط Tajawal بوزني 500 و700 (رخصة SIL Open Font License 1.1، نصها في `fonts/OFL.txt`)، محفوظ داخل الموقع ليعمل دون إنترنت.
 
 ## ربط Firebase لجمع ملخصات الأثر (اختياري، مرة واحدة)
 

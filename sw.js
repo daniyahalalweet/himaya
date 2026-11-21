@@ -1,6 +1,6 @@
 // يحفظ ملفات النظام على الجهاز ليعمل دون إنترنت بعد أول فتح
-const CACHE = 'himaya-v1';
-const FILES = ['./', './index.html', './config.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './vendor/qrcode.min.js', './vendor/jsqr.min.js'];
+const CACHE = 'himaya-v2';
+const FILES = ['./', './index.html', './config.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './vendor/qrcode.min.js', './vendor/jsqr.min.js', './fonts/tajawal-arabic-500-normal.woff2', './fonts/tajawal-arabic-700-normal.woff2', './fonts/tajawal-latin-500-normal.woff2', './fonts/tajawal-latin-700-normal.woff2'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {

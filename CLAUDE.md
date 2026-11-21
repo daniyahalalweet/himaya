@@ -28,6 +28,7 @@
 | `firestore.rules` | قواعد الحماية؛ مكان البريد يُستبدل ببريد صاحبة المبادرة |
 | `sw.js` | التخزين دون اتصال. **يُرفع رقم `CACHE` عند كل نشر** |
 | `vendor/` | qrcode-generator 1.4.4 و jsQR 1.4.0 (مع بديل من jsdelivr إن غابت) |
+| `fonts/` | خط Tajawal (500 و700، عربي ولاتيني) بصيغة woff2 مع رخصة OFL؛ مُدرج في `sw.js` |
 | `tests/` | اختبارات Playwright |
 | `README.md` | دليل النشر على GitHub Pages وربط Firebase بالعربية |
 
@@ -35,6 +36,7 @@
 
 - **البيانات:** كائن `db` في `localStorage` بالمفتاح `himaya-field-v1`. الحقول: `school`, `classes[{id,name,room,lv,st[{n,name,w}]}]`, `events[{id,type,scen,start,evac,end,reports{cid:{t,by,l,via,x{n:{s,l,note}},e,r,lvOk}},found}]`, `ts` (جلسة حصر المعلمة), `outbox`, `sent`, `share`, `lastBackup`.
 - **الشاشات** (`db.view`): `home`, `setup`, `teacher`, `tlist`, `tdone`, `officer`, `olist`, `report`, `history`, `scen`, `admin`. الدوال `vHome`, `vSetup` … وتُرسم عبر `render()`.
+- **التصميم:** على نمط مواقع إدارات التعليم: شريط علوي داكن داخله قائمة بيضاء مستديرة (تصبح قائمة منسدلة تحت ٩٦٠px)، ثم عنوان الصفحة ووصفها والمسار. كل شاشة تبدأ بـ `<h2>` ثم `<p class="lead">` اختيارياً، و`hoist()` ينقلهما إلى الشريط العلوي ويبني المسار من `NAV` و`SEC`. أزرار القائمة والمسار والتذييل تستخدم `data-a="nav" data-to` (لا `data-v`) حتى لا تتعارض مع محددات الاختبارات. الألوان في متغيرات `:root`.
 - **الأفعال:** كل زر يحمل `data-a`، والدوال في الكائن `A` (تفويض حدث واحد).
 - **الحساب:** `agg(event)` يعطي صفوف نموذج ١٧ والمفقودات والمعلّقات والمطابقات.
 - **الرموز:** `encode` (HM2: base64 JSON) للنتائج الصغيرة، و`encodeZ` (HM3: deflate-raw) للقوائم والنسخ الاحتياطية، و`split` لتقسيم ما يزيد على ٩٠٠ حرف إلى عدة رموز `HMP|id|i|n|data`.

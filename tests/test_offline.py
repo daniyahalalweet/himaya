@@ -17,6 +17,7 @@ async def main():
         await ctx.set_offline(True)
         await pg.reload(); await pg.wait_for_timeout(800)
         print('offline title:', await pg.title(), '| qrcode lib:', await pg.evaluate("typeof qrcode"), '| jsQR:', await pg.evaluate("typeof jsQR"))
-        print('home text ok:', 'جاهزية الإخلاء' in await pg.inner_text('#app'))
+        print('home text ok:', 'جاهزية الإخلاء' in await pg.inner_text('#pTitle'))
+        print('font offline:', await pg.evaluate("document.fonts.ready.then(()=>document.fonts.check('500 16px Tajawal','حماية'))"))
         await b.close()
 asyncio.run(main())
